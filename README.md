@@ -231,7 +231,7 @@ S06-26-AB-EQUIPO-19/
 | Nome | Papel | GitHub |
 |------|-------|--------|
 | Matheus Bauer | Architect (Software / Solution Architect) | [@obauercosta](https://github.com/obauercosta) |
-| Geordani Machado | Frontend Developer | — |
+| Geordani Machado | Frontend Developer | [@Geordani-Machado](https://github.com/Geordani-Machado) |
 | Wesley Muniz França | Graphic Designer | — |
 | Erick Levi Souza Machado | Game Developer | — |
 | Fernando Henrique Pereira Fernandez | Data Analyst | — |
