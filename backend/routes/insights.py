@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 from models.schemas import InsightsResponse, RegiaoInsight
+from services.geo_service import get_todas_regioes
 
 router = APIRouter(prefix="/insights", tags=["Insights"])
 
@@ -7,30 +8,19 @@ router = APIRouter(prefix="/insights", tags=["Insights"])
 @router.get("/", response_model=InsightsResponse)
 def get_insights():
     """
-    Retorna dados de concentração de talentos por região.
-
-    ATENÇÃO: retorna dados mockados até integração com a API de geolocalização.
+    Retorna dados reais de concentração de pessoas por região.
+    Fonte: Vísent CDRView — tensor_concentracao.csv
     """
-    # TODO: integrar com API de dados geográficos
-    regioes_mock = [
+    regioes_raw = get_todas_regioes()
+
+    regioes = [
         RegiaoInsight(
-            regiao="Nordeste - Bahia",
-            concentracao=0.78,
-            cobertura_rede="4G",
-            perfis_disponiveis=134,
-        ),
-        RegiaoInsight(
-            regiao="Norte - Pará",
-            concentracao=0.61,
-            cobertura_rede="3G",
-            perfis_disponiveis=89,
-        ),
-        RegiaoInsight(
-            regiao="Nordeste - Ceará",
-            concentracao=0.55,
-            cobertura_rede="4G",
-            perfis_disponiveis=112,
-        ),
+            regiao=r["regiao"],
+            concentracao=r["concentracao"],
+            cobertura_rede=r["cobertura_rede"],
+            perfis_disponiveis=r["perfis_disponiveis"],
+        )
+        for r in regioes_raw
     ]
 
-    return InsightsResponse(mapa_talentos=regioes_mock)
+    return InsightsResponse(mapa_talentos=regioes)
