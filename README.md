@@ -32,7 +32,9 @@ API B2B para recrutamento e seleção com **filtro anti-viés** e **critérios E
 - **Campos chave para matching**: `home_municipio`, `income_cluster`, `age_group`, `mobility_pattern`, `flag_flagship`
 - 📂 **Scripts SQL disponíveis**:
   - Criação das tabelas e índices: `backend/database/schema.sql`
-  - Inserção de dados de exemplo/teste: `backend/database/insert.sql`
+  - Inserção de dados de exemplo/teste: `backend/database/insert.sql` 
+- 📎 **Dados completos**: Os arquivos CSV originais e completos utilizados no projeto estão disponíveis para download no link abaixo:
+  > **[Acessar base de dados Vísent - Arquivos CSV](COLE_SEU_LINK_AQUI)**
 
 ---
 
