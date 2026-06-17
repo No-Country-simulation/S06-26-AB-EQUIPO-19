@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from routes import match, vagas, insights
+from routes import match, vagas, insights, dashboard
 
 app = FastAPI(
     title="App BiT — Motor de Matching Inclusivo",
@@ -20,7 +20,7 @@ app.add_middleware(
 app.include_router(match.router)
 app.include_router(vagas.router)
 app.include_router(insights.router)
-
+app.include_router(dashboard.router)
 
 @app.get("/", tags=["Health"])
 def health_check():
