@@ -235,7 +235,7 @@ S06-26-AB-EQUIPO-19/
 | Wesley Muniz França | Graphic Designer | — |
 | Erick Levi Souza Machado | Game Developer | — |
 | Fernando Henrique Pereira Fernandez | Data Analyst | — |
-| Carlos André Alves Bezerra | Backend Developer | — |
+| Carlos André Alves Bezerra | Backend Developer | [@andrealves8](https://github.com/andrealves8) |
 
 ---
 
