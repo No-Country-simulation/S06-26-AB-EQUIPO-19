@@ -49,7 +49,7 @@ Exemplos:
 Quando terminar, abre um Pull Request no GitHub:
 - Base: `main`
 - Compare: sua branch
-- Avisa o **arquiteto do projeto** no Discord para revisar
+- Avisar o **arquiteto do projeto** no Discord para revisar
 
 ### 4. Merge
 
@@ -77,5 +77,3 @@ Esses itens já estão no `.gitignore`. Se aparecer algum desses no seu commit, 
 | `fix/...` | Correções |
 
 ---
-
-*Dúvidas? Fala com o arquiteto do projeto no Discord.*
