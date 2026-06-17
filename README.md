@@ -14,27 +14,17 @@ API B2B para recrutamento e seleção com **filtro anti-viés** e **critérios E
 - FastAPI
 - SQLAlchemy
 - Uvicorn
-- OAS 3.1 (Documentação automática em /docs)
+- **MySQL** — Banco de dados utilizado para testes e desenvolvimento
+- OAS 3.1 — Documentação e teste de API via **Swagger UI**
 
 ## 📊 Base de Dados
-- Estrutura alinhada com dados Vísent
-- Tabelas: , , , , 
-- Campos chave: , , , , 
+- Banco utilizado: **MySQL**
+- Estrutura alinhada com modelo Vísent
+- Tabelas: assinantes, `antenas`, `concentracao`, `vagas`, `empresas`
+- Campos chave: `home_municipio`, `income_cluster`, `age_group`, `mobility_pattern`, `flag_flagship`
+- 📂 **Scripts SQL**:
+  - Criação das tabelas: `backend/database/schema.sql`
+  - Inserção de dados para teste: `backend/database/insert.sql`
 
-## 🚀 Como executar
-```bash
-# Instalar dependências
-pip install -r requirements.txt
-
-# Configurar variáveis de ambiente (copiar .env.example para .env)
-
-# Rodar servidor
-python3 -m uvicorn backend.main:app --reload --port 8080
-```
-
-Acesse: http://localhost:8080/docs
-
----
-**Versão:** 0.1.0
-**Branch:** feat/backend-base-match-route
-
+## 🧪 Teste da API
+A documentação interativa e ambiente de testes estão disponíveis através do **Swagger UI**:
