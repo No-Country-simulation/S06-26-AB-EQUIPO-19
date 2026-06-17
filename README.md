@@ -125,36 +125,59 @@ Veja o resultado abaixo: retorno dos candidatos, índice de inclusão e total en
 
 ✅ Todos os testes são feitos em tempo real, consultando diretamente o banco de dados configurado.
 Versão: 0.1.0
-Branch: feat/backend-base-match-route
-plaintext
 
-📋 TESTE COMPLETO E DOCUMENTAÇÃO FINAL
-Projeto: App BiT — Motor de Matching Inclusivo
-Versão: 0.1.0
-Base de Dados: Vísent (Tabela assinantes + vagas)
-URL: http://localhost:8080/docs
+# 📋 TESTE COMPLETO E DOCUMENTAÇÃO FINAL
 
-🩺 1. HEALTH CHECK → GET /
-✅ Objetivo: Validar que a API está online e funcional.
-Ação:
-Clique em GET / → Try it out → Execute
-Resultado:
-json
+**Projeto:** App BiT — Motor de Matching Inclusivo  
+**Versão:** 0.1.0  
+**Base de Dados:** Vísent (Tabela `assinantes` + `vagas`)  
+**Documentação Swagger:** http://localhost:8080/docs
+
+---
+
+## 🩺 1. HEALTH CHECK → `GET /`
+
+### ✅ Objetivo
+Validar que a API está online e funcional.
+
+### ▶️ Ação
+1. Acesse `GET /`
+2. Clique em **Try it out**
+3. Clique em **Execute**
+
+### 📤 Resultado Esperado
+
+```json
 {
   "status": "online",
   "versao": "0.1.0",
   "nome": "App BiT — Motor de Matching Inclusivo"
 }
+```
 
-Status: ✅ 200 OK
-Observação: Sistema operacional, versão correta.
+### 📌 Status
 
-📋 2. VAGAS → GET /vagas/
-✅ Objetivo: Listar todas as vagas cadastradas, tratando valores nulos e convertendo critérios ESG para lista.
-Ação:
-Clique em GET /vagas/ → Try it out → Execute
-Resultado (exemplo):
-json
+| Status | Resultado |
+|----------|----------|
+| ✅ 200 OK | API online e funcional |
+
+**Observação:** Sistema operacional e versão retornados corretamente.
+
+---
+
+## 📋 2. VAGAS → `GET /vagas/`
+
+### ✅ Objetivo
+Listar todas as vagas cadastradas, tratando valores nulos e convertendo critérios ESG para lista.
+
+### ▶️ Ação
+1. Acesse `GET /vagas/`
+2. Clique em **Try it out**
+3. Clique em **Execute**
+
+### 📤 Resultado Esperado
+
+```json
 [
   {
     "id": 1,
@@ -173,32 +196,55 @@ json
     "escolaridade_requerida": "Superior Completo",
     "faixa_salarial": "R$ 5.000,00 a R$ 7.000,00",
     "localizacao": "Ipu - CE",
-    "criterios_esg": ["55+", "PcD", "Grupo Sub-representado"],
+    "criterios_esg": [
+      "55+",
+      "PcD",
+      "Grupo Sub-representado"
+    ],
     "status": "Publicada"
   }
 ]
+```
 
-Status: ✅ 200 OK
-Observação: Retorna todos os registros, valores nulos como "", critérios ESG como [] ou lista de valores.
+### 📌 Status
 
-📝 3. VAGAS → POST /vagas/
-✅ Objetivo: Cadastrar nova vaga com critérios ESG (diferencial do projeto).
-Ação:
-Clique em POST /vagas/ → Try it out
-Cole o JSON:
-json
+| Status | Resultado |
+|----------|----------|
+| ✅ 200 OK | Consulta realizada com sucesso |
+
+**Observação:** Valores nulos são retornados como `""` e critérios ESG como listas (`[]`).
+
+---
+
+## 📝 3. VAGAS → `POST /vagas/`
+
+### ✅ Objetivo
+Cadastrar uma nova vaga com critérios ESG, principal diferencial do projeto.
+
+### ▶️ Ação
+1. Acesse `POST /vagas/`
+2. Clique em **Try it out**
+3. Insira o JSON abaixo:
+
+```json
 {
   "cargo": "Engenheiro de Dados",
   "descricao": "Trabalhar com dados de mobilidade e inclusão",
   "requisito_perfil": "Superior Completo",
   "faixa_salarial": "R$ 6.000,00 a R$ 9.000,00",
   "localizacao": "Florianópolis - SC",
-  "criterios_esg": ["PcD", "Grupo Sub-representado"]
+  "criterios_esg": [
+    "PcD",
+    "Grupo Sub-representado"
+  ]
 }
+```
 
-Clique em Execute
-Resultado:
-json
+4. Clique em **Execute**
+
+### 📤 Resultado Esperado
+
+```json
 {
   "id": 5,
   "cargo": "Engenheiro de Dados",
@@ -206,29 +252,48 @@ json
   "escolaridade_requerida": "Superior Completo",
   "faixa_salarial": "R$ 6.000,00 a R$ 9.000,00",
   "localizacao": "Florianópolis - SC",
-  "criterios_esg": ["PcD", "Grupo Sub-representado"],
+  "criterios_esg": [
+    "PcD",
+    "Grupo Sub-representado"
+  ],
   "status": "Publicada"
 }
+```
 
-Status: ✅ 201 Created
-Observação: Cadastro realizado com sucesso, critérios ESG salvos e retornados corretamente. Repita o teste GET /vagas/ para confirmar que apareceu na lista.
+### 📌 Status
 
-🤝 4. MATCHING → POST /match/
-✅ Objetivo: Funcionalidade principal — Buscar candidatos com filtro anti-viés, critérios ESG e ranqueamento por Índice de Inclusão.
-Base: Tabela assinantes (dados reais Vísent)
-📌 TESTE 4.1: Critério ESG + Faixa Etária
-Clique em POST /match/ → Try it out
-Cole:
-json
+| Status | Resultado |
+|----------|----------|
+| ✅ 201 Created | Cadastro realizado com sucesso |
+
+**Observação:** Após o cadastro, execute novamente `GET /vagas/` para confirmar a inclusão da nova vaga.
+
+---
+
+## 🤝 4. MATCHING → `POST /match/`
+
+### ✅ Objetivo
+Buscar candidatos utilizando filtros anti-viés, critérios ESG e ranqueamento por Índice de Inclusão.
+
+**Base de Dados:** Tabela `assinantes` (dados reais da Vísent)
+
+---
+
+### 📌 TESTE 4.1 — Critério ESG + Faixa Etária
+
+#### ▶️ JSON de Entrada
+
+```json
 {
   "faixa_etaria": "55+",
   "grupo_sub_representado": true,
   "limite": 5
 }
+```
 
-Execute
-Resultado:
-json
+#### 📤 Resultado Esperado
+
+```json
 {
   "total_encontrados": 7590,
   "candidatos": [
@@ -248,30 +313,61 @@ json
     }
   ]
 }
+```
 
-Status: ✅ 200 OK
-Observação: Encontrou 7.590 pessoas que atendem aos critérios. Índice 1 = pontuação máxima de inclusão. Ordenado do mais inclusivo para o menos.
+#### 📌 Status
 
-📌 TESTE 4.2: Filtrar por Município e Renda
-Cole:
-json
+| Status | Resultado |
+|----------|----------|
+| ✅ 200 OK | Matching executado com sucesso |
+
+**Observação:** Foram encontrados **7.590 candidatos**. O valor **1.0** representa a pontuação máxima do Índice de Inclusão.
+
+---
+
+### 📌 TESTE 4.2 — Município + Faixa de Renda
+
+#### ▶️ JSON de Entrada
+
+```json
 {
   "municipio": "Palhoça",
   "renda": "C",
   "limite": 3
 }
+```
 
-Execute
-Resultado: Retorna apenas pessoas de Palhoça, renda C, com índice calculado.
-Status: ✅ 200 OK
-Observação: Filtros funcionam isolados ou combinados. Campos permitidos: municipio, regiao, renda (A/B/C), faixa_etaria, mobilidade.
+#### 📌 Status
 
-📊 5. INSIGHTS E GEOLOCALIZAÇÃO → GET /insights/
-✅ Objetivo: Apresentar mapa de talentos, concentração de usuários e dados de cobertura por região.
-Ação:
-Clique em GET /insights/ → Try it out → Execute
-Resultado (exemplo):
-json
+| Status | Resultado |
+|----------|----------|
+| ✅ 200 OK | Filtros aplicados corretamente |
+
+**Observação:** Os filtros podem ser utilizados individualmente ou combinados.
+
+**Campos disponíveis:**
+
+- `municipio`
+- `regiao`
+- `renda` (A, B ou C)
+- `faixa_etaria`
+- `mobilidade`
+
+---
+
+## 📊 5. INSIGHTS E GEOLOCALIZAÇÃO → `GET /insights/`
+
+### ✅ Objetivo
+Apresentar mapa de talentos, concentração de usuários e cobertura por região.
+
+### ▶️ Ação
+1. Acesse `GET /insights/`
+2. Clique em **Try it out**
+3. Clique em **Execute**
+
+### 📤 Resultado Esperado
+
+```json
 {
   "mapa_talentos": [
     {
@@ -288,16 +384,31 @@ json
     }
   ]
 }
+```
 
-Status: ✅ 200 OK
-Observação: Dados de densidade populacional de talentos e infraestrutura por região.
+### 📌 Status
 
-📈 6. DASHBOARD B2C - SAÚDE DO TIME → GET /dashboard/saude-time
-✅ Objetivo: Métricas de diversidade, perfil demográfico e qualificação — tela principal do sistema.
-Ação:
-Clique em GET /dashboard/saude-time → Try it out → Execute
-Resultado:
-json
+| Status | Resultado |
+|----------|----------|
+| ✅ 200 OK | Dados retornados corretamente |
+
+**Observação:** Exibe densidade de talentos e infraestrutura disponível por região.
+
+---
+
+## 📈 6. DASHBOARD B2C — SAÚDE DO TIME → `GET /dashboard/saude-time`
+
+### ✅ Objetivo
+Exibir métricas de diversidade, qualificação e distribuição demográfica.
+
+### ▶️ Ação
+1. Acesse `GET /dashboard/saude-time`
+2. Clique em **Try it out**
+3. Clique em **Execute**
+
+### 📤 Resultado Esperado
+
+```json
 {
   "total_geral_assinantes": 215400,
   "dados_por_perfil": [
@@ -329,45 +440,41 @@ json
   ],
   "data_atualizacao": "2026-06-16"
 }
+```
 
-Status: ✅ 200 OK
-Observação: Base com 215.400 usuários cadastrados. Mostra distribuição por perfil, região, índice de qualificação e densidade. Dados alinhados com o Matching.
+### 📌 Status
 
-✅ RESUMO FINAL DE VALIDAÇÃO
-Tabela
-Funcionalidade
-Método
-Rota
-Status
-Observação
-Saúde da API
-GET
-/
-✅ 200
-Online, versão correta
-Listar Vagas
-GET
-/vagas/
-✅ 200
-Trata nulos, converte ESG
-Publicar Vaga
-POST
-/vagas/
-✅ 201
-Cadastro com critérios
-Matching
-POST
-/match/
-✅ 200
-7.590 resultados, índice 1.0
-Insights
-GET
-/insights/
-✅ 200
-Dados geográficos
-Dashboard
-GET
-/dashboard/saude-time
-✅ 200
-215k usuários, métricas ESG
+| Status | Resultado |
+|----------|----------|
+| ✅ 200 OK | Dashboard carregado com sucesso |
 
+**Observação:** Base contendo **215.400 usuários**, com métricas de perfil, escolaridade, qualificação e distribuição regional.
+
+---
+
+# ✅ RESUMO FINAL DE VALIDAÇÃO
+
+| Funcionalidade | Método | Rota | Status | Observação |
+|---------------|---------|-------|---------|------------|
+| Saúde da API | GET | `/` | ✅ 200 | API online |
+| Listar Vagas | GET | `/vagas/` | ✅ 200 | Trata nulos e converte ESG |
+| Publicar Vaga | POST | `/vagas/` | ✅ 201 | Cadastro realizado |
+| Matching Inclusivo | POST | `/match/` | ✅ 200 | 7.590 candidatos encontrados |
+| Insights Geográficos | GET | `/insights/` | ✅ 200 | Dados regionais |
+| Dashboard ESG | GET | `/dashboard/saude-time` | ✅ 200 | 215.400 usuários analisados |
+
+---
+
+## 🎯 Conclusão
+
+Todos os endpoints foram testados com sucesso e retornaram os resultados esperados. O sistema demonstrou estabilidade, consistência dos dados e funcionamento correto das funcionalidades de:
+
+- Matching Inclusivo
+- Gestão de Vagas
+- Insights Geográficos
+- Dashboard ESG
+- Health Check
+
+A versão **0.1.0** encontra-se validada e pronta para evolução das próximas funcionalidades do projeto.
+Branch: feat/backend-base-match-route
+plaintext
