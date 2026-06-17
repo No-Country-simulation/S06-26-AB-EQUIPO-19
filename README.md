@@ -4,26 +4,29 @@ Repositório oficial da **Equipe 19** — Hackathon No Country S06-26.
 
 Plataforma B2B que conecta empresas com metas ESG a talentos de grupos sub-representados. Um motor de IA calcula o score de compatibilidade técnica com filtro anti-viés, e dados reais de geolocalização mostram onde esses talentos estão concentrados por região.
 
+> ⚠️ **Observação:** Este repositório contém o Backend (API). O Frontend está em desenvolvimento.
+
 ---
 
 ## Índice
 
-- [O Desafio](#o-desafio)
+- [Funcionalidades](#funcionalidades)
 - [Stack Tecnológica](#stack-tecnológica)
 - [Banco de Dados](#banco-de-dados)
-- [Endpoints da API](#endpoints-da-api)
-- [Variáveis de Ambiente](#variáveis-de-ambiente)
 - [Como Rodar Localmente](#como-rodar-localmente)
-- [Estrutura de Pastas](#estrutura-de-pastas)
+- [Endpoints da API](#endpoints-da-api)
+- [Resumo de Validação](#resumo-de-validação)
 - [Equipe](#equipe)
 
 ---
 
-## O Desafio
+## Funcionalidades
 
-Empresas com metas ESG não conseguem encontrar e contratar talentos de grupos sub-representados de forma eficiente e sem viés.
-
-Nossa solução: um portal B2B onde empresas publicam vagas com filtros de diversidade, e um agente de IA retorna uma shortlist de candidatos com score de compatibilidade e badge de diversidade geográfica, sem expor atributos pessoais ao processo de seleção.
+- **Health Check** — Verificação de status e disponibilidade da API
+- **Vagas** — Cadastro, listagem e gerenciamento de oportunidades com critérios ESG
+- **Matching** — Busca inteligente de candidatos ranqueada por Índice de Inclusão
+- **Insights** — Dados de geolocalização, concentração e fluxo de talentos
+- **Dashboard B2C** — Métricas de diversidade, perfil demográfico e qualificação da base
 
 ---
 
@@ -51,185 +54,11 @@ Nossa solução: um portal B2B onde empresas publicam vagas com filtros de diver
 
 ---
 
-## Endpoints da API
-
-Base URL local: `http://localhost:8080`
-
-Documentação interativa (Swagger): `http://localhost:8080/docs`
-
----
-
-### GET /
-
-Health check — verifica se a API está no ar.
-
-**Response `200 OK`:**
-```json
-{
-  "status": "ok",
-  "message": "App BiT API está no ar."
-}
-```
-
----
-
-### GET /vagas
-
-Lista todas as vagas publicadas.
-
-**Response `200 OK`:**
-```json
-[
-  {
-    "id": 1,
-    "cargo": "Analista de Dados",
-    "descricao": "Vaga para analista com foco em diversidade",
-    "escolaridade_requerida": "Superior Completo",
-    "faixa_salarial": "R$ 4.000 - R$ 6.000",
-    "localizacao": "Florianópolis",
-    "criterios_esg": ["PcD", "Mulheres em Tech"],
-    "status": "Publicada"
-  }
-]
-```
-
----
-
-### POST /vagas
-
-Publica uma nova vaga no sistema.
-
-**Request Body:**
-```json
-{
-  "cargo": "Desenvolvedora Back-end Pleno",
-  "descricao": "Vaga com foco em inclusão de grupos sub-representados",
-  "faixa_salarial": "R$ 6.000 - R$ 9.000",
-  "localizacao": "Florianópolis",
-  "criterios_esg": ["Negros e Pardos", "Mulheres em Tech"]
-}
-```
-
-**Response `201 Created`:**
-```json
-{
-  "id": 12,
-  "cargo": "Desenvolvedora Back-end Pleno",
-  "descricao": "Vaga com foco em inclusão de grupos sub-representados",
-  "faixa_salarial": "R$ 6.000 - R$ 9.000",
-  "localizacao": "Florianópolis",
-  "criterios_esg": ["Negros e Pardos", "Mulheres em Tech"],
-  "status": "Publicada"
-}
-```
-
----
-
-### POST /match
-
-Busca candidatos com filtros anti-viés e critérios ESG, ranqueados por Índice de Inclusão.
-
-**Request Body:**
-```json
-{
-  "municipio": "Florianópolis",
-  "regiao": "Centro",
-  "renda": "B",
-  "faixa_etaria": "25-34",
-  "mobilidade": true,
-  "grupo_sub_representado": true,
-  "limite": 10
-}
-```
-
-**Response `200 OK`:**
-```json
-{
-  "total_encontrados": 48,
-  "candidatos": [
-    {
-      "id": 7,
-      "perfil": "Perfil Renda B",
-      "detalhes": "Renda: B | Idade: 25-34 | Mobilidade: INTENSA",
-      "localizacao": "Florianópolis - Região: Centro",
-      "indice_inclusao": 0.9
-    }
-  ]
-}
-```
-
-> ⚠️ **Segurança:** o endpoint não retorna `nome`, `email`, `genero`, `raca` ou qualquer atributo pessoal identificável.
-
----
-
-### GET /insights
-
-Retorna dados reais de concentração de pessoas por região.
-Fonte: Vísent CDRView — dados de antenas Anatel de Florianópolis.
-
-**Response `200 OK`:**
-```json
-{
-  "mapa_talentos": [
-    {
-      "regiao": "Florianópolis - CBD_BEIRAMAR",
-      "concentracao": 0.9,
-      "cobertura_rede": "4G/5G",
-      "perfis_disponiveis": 1240
-    },
-    {
-      "regiao": "Florianópolis - UFSC",
-      "concentracao": 0.75,
-      "cobertura_rede": "4G/5G",
-      "perfis_disponiveis": 890
-    }
-  ]
-}
-```
-
----
-
-### GET /dashboard/saude-time
-
-Retorna métricas de distribuição de perfis por renda, idade e região.
-
-**Response `200 OK`:**
-```json
-{
-  "total_geral_assinantes": 215400,
-  "dados_por_perfil": [...],
-  "dados_por_regiao": [...],
-  "data_atualizacao": "2026-06-16"
-}
-```
-
----
-
-## Variáveis de Ambiente
-
-Crie um arquivo `.env` dentro da pasta `backend/` copiando o `.env.example`:
-
-```bash
-cp backend/.env.example backend/.env
-```
-
-| Variável | Descrição |
-|----------|-----------|
-| `DB_HOST` | Host do banco de dados (padrão: `localhost`) |
-| `DB_USER` | Usuário do MySQL |
-| `DB_PASSWORD` | Senha do MySQL |
-| `DB_NAME` | Nome do banco (padrão: `appbit_hackathon`) |
-| `IA_API_KEY` | Chave da API do Google AI Studio (Gemini) |
-
-> 🔒 **Nunca suba o arquivo `.env` para o repositório.**
-
----
-
 ## Como Rodar Localmente
 
 ### Pré-requisitos
 
-- Python 3.10+
+- Python 3.12+
 - MySQL rodando localmente
 - Chave de API do [Google AI Studio](https://aistudio.google.com) (gratuito)
 
@@ -253,19 +82,223 @@ cp backend/.env.example backend/.env
 # Edite o backend/.env com suas credenciais do banco e a IA_API_KEY
 
 # 5. Crie o banco de dados
-# No MySQL Workbench ou terminal MySQL, execute:
-# backend/database/schema.sql   (cria as tabelas)
-# backend/database/insert.sql   (insere dados de exemplo)
+mysql -u root -p < backend/database/schema.sql
+mysql -u root -p < backend/database/insert.sql
 
 # 6. Carregue os dados da Vísent no banco
 cd backend
 python carregar_dados.py
 
 # 7. Inicie o servidor
-uvicorn main:app --reload --port 8080
+python3 -m uvicorn backend.main:app --reload --host 0.0.0.0 --port 8080
 ```
 
 Acesse `http://localhost:8080/docs` para explorar todos os endpoints via Swagger.
+
+---
+
+## Endpoints da API
+
+Base URL local: `http://localhost:8080`
+
+Documentação interativa (Swagger): `http://localhost:8080/docs`
+
+---
+
+### GET /
+
+Health check — verifica se a API está no ar.
+
+**Response `200 OK`:**
+```json
+{
+  "status": "online",
+  "versao": "0.1.0",
+  "nome": "App BiT — Motor de Matching Inclusivo"
+}
+```
+
+---
+
+### GET /vagas
+
+Lista todas as vagas publicadas.
+
+**Response `200 OK`:**
+```json
+[
+  {
+    "id": 1,
+    "cargo": "Analista de RH",
+    "descricao": "Atuar com processos seletivos inclusivos",
+    "escolaridade_requerida": "",
+    "faixa_salarial": "R$ 3.000,00 a R$ 4.500,00",
+    "localizacao": "Palhoça - SC",
+    "criterios_esg": [],
+    "status": "Publicada"
+  },
+  {
+    "id": 4,
+    "cargo": "Desenvolvedor Python",
+    "descricao": "Criar soluções com FastAPI e acessibilidade",
+    "escolaridade_requerida": "Superior Completo",
+    "faixa_salarial": "R$ 5.000,00 a R$ 7.000,00",
+    "localizacao": "Ipu - CE",
+    "criterios_esg": ["55+", "PcD", "Grupo Sub-representado"],
+    "status": "Publicada"
+  }
+]
+```
+
+---
+
+### POST /vagas
+
+Publica uma nova vaga no sistema.
+
+**Request Body:**
+```json
+{
+  "cargo": "Engenheiro de Dados",
+  "descricao": "Trabalhar com dados de mobilidade e inclusão",
+  "requisito_perfil": "Superior Completo",
+  "faixa_salarial": "R$ 6.000,00 a R$ 9.000,00",
+  "localizacao": "Florianópolis - SC",
+  "criterios_esg": ["PcD", "Grupo Sub-representado"]
+}
+```
+
+**Response `201 Created`:**
+```json
+{
+  "id": 5,
+  "cargo": "Engenheiro de Dados",
+  "descricao": "Trabalhar com dados de mobilidade e inclusão",
+  "escolaridade_requerida": "Superior Completo",
+  "faixa_salarial": "R$ 6.000,00 a R$ 9.000,00",
+  "localizacao": "Florianópolis - SC",
+  "criterios_esg": ["PcD", "Grupo Sub-representado"],
+  "status": "Publicada"
+}
+```
+
+---
+
+### POST /match
+
+Busca candidatos com filtros anti-viés e critérios ESG, ranqueados por Índice de Inclusão.
+
+> ⚠️ **Segurança:** o endpoint não retorna `nome`, `email`, `genero`, `raca` ou qualquer atributo pessoal identificável.
+
+**Campos disponíveis:** `municipio`, `regiao`, `renda` (A, B ou C), `faixa_etaria`, `mobilidade`, `grupo_sub_representado`, `limite`
+
+**Request Body:**
+```json
+{
+  "faixa_etaria": "55+",
+  "grupo_sub_representado": true,
+  "limite": 5
+}
+```
+
+**Response `200 OK`:**
+```json
+{
+  "total_encontrados": 7590,
+  "candidatos": [
+    {
+      "id": 81,
+      "perfil": "Perfil Renda C",
+      "detalhes": "Renda: C | Idade: 55+ | Mobilidade: INTENSA",
+      "localizacao": "São José - Região: SAO_JOSE_BARREIROS",
+      "indice_inclusao": 1.0
+    },
+    {
+      "id": 331,
+      "perfil": "Perfil Renda B",
+      "detalhes": "Renda: B | Idade: 55+ | Mobilidade: INTENSA",
+      "localizacao": "Palhoça - Região: PALHOCA_CENTRO",
+      "indice_inclusao": 1.0
+    }
+  ]
+}
+```
+
+---
+
+### GET /insights
+
+Retorna dados reais de concentração de pessoas por região.
+Fonte: Vísent CDRView — dados de antenas Anatel de Florianópolis.
+
+**Response `200 OK`:**
+```json
+{
+  "mapa_talentos": [
+    {
+      "regiao": "Florianópolis",
+      "concentracao": 0.94,
+      "cobertura_rede": "5G",
+      "perfis_disponiveis": 89200
+    },
+    {
+      "regiao": "Palhoça",
+      "concentracao": 0.79,
+      "cobertura_rede": "4G/5G",
+      "perfis_disponiveis": 38500
+    }
+  ]
+}
+```
+
+---
+
+### GET /dashboard/saude-time
+
+Retorna métricas de distribuição de perfis por renda, idade e região.
+
+**Response `200 OK`:**
+```json
+{
+  "total_geral_assinantes": 215400,
+  "dados_por_perfil": [
+    {
+      "perfil": "Analista de Sistemas",
+      "quantidade": 32400,
+      "percentual_total": 15.04,
+      "media_escolaridade": "Superior Completo",
+      "indice_qualificacao": 0.92
+    }
+  ],
+  "dados_por_regiao": [
+    {
+      "regiao": "Florianópolis",
+      "total_pessoas": 89200,
+      "distribuicao_perfis": {
+        "Analista": 14500,
+        "Desenvolvedor": 12800
+      },
+      "indice_densidade": 0.94
+    }
+  ],
+  "data_atualizacao": "2026-06-16"
+}
+```
+
+---
+
+## Resumo de Validação
+
+Todos os endpoints foram testados com sucesso via Swagger.
+
+| Funcionalidade | Método | Rota | Status |
+|---------------|---------|-------|--------|
+| Saúde da API | GET | `/` | ✅ 200 |
+| Listar Vagas | GET | `/vagas/` | ✅ 200 |
+| Publicar Vaga | POST | `/vagas/` | ✅ 201 |
+| Matching Inclusivo | POST | `/match/` | ✅ 200 |
+| Insights Geográficos | GET | `/insights/` | ✅ 200 |
+| Dashboard ESG | GET | `/dashboard/saude-time` | ✅ 200 |
 
 ---
 
@@ -275,23 +308,23 @@ Acesse `http://localhost:8080/docs` para explorar todos os endpoints via Swagger
 S06-26-AB-EQUIPO-19/
 ├── backend/
 │   ├── config/
-│   │   └── database.py          # Conexão MySQL via SQLAlchemy
+│   │   └── database.py
 │   ├── database/
-│   │   ├── schema.sql            # Criação das tabelas
-│   │   └── insert.sql            # Dados de exemplo
+│   │   ├── schema.sql
+│   │   └── insert.sql
 │   ├── models/
-│   │   ├── models_db.py          # Modelos SQLAlchemy (tabelas)
-│   │   └── schemas.py            # Schemas Pydantic (request/response)
+│   │   ├── models_db.py
+│   │   └── schemas.py
 │   ├── routes/
-│   │   ├── match.py              # POST /match — motor de matching
-│   │   ├── vagas.py              # GET e POST /vagas
-│   │   ├── insights.py           # GET /insights — mapa de talentos
-│   │   └── dashboard.py          # GET /dashboard/saude-time
+│   │   ├── match.py
+│   │   ├── vagas.py
+│   │   ├── insights.py
+│   │   └── dashboard.py
 │   ├── services/
-│   │   ├── ia_service.py         # Integração Google Gemini
-│   │   └── geo_service.py        # Dados geográficos Vísent
-│   ├── carregar_dados.py         # Script para popular o banco com CSVs
-│   ├── main.py                   # Entrada da aplicação FastAPI
+│   │   ├── ia_service.py
+│   │   └── geo_service.py
+│   ├── carregar_dados.py
+│   ├── main.py
 │   ├── Dockerfile
 │   └── requirements.txt
 ├── dataset-visent/
