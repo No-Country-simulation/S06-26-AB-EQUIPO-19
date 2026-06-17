@@ -99,35 +99,7 @@ python3 -m uvicorn backend.main:app --reload --host 0.0.0.0 --port 8080
 
 📌 O servidor estará disponível em: http://localhost:8080
 
-### 8. Como testar a API no Swagger
-A interface interativa do Swagger permite testar todas as rotas diretamente no navegador, sem necessidade de ferramentas externas.
-
-Acesse: http://localhost:8080/docs
-Você verá a lista completa de endpoints:
-GET / — Verifica status da API
-POST /match/ — Realiza a busca de candidatos (funcionalidade principal)
-GET /vagas/ — Lista todas as vagas
-POST /vagas/ — Cadastra nova vaga
-GET /insights/ — Dados de geolocalização
-GET /dashboard/saude-time — Métricas gerais
-Exemplo de teste - Rota de Matching:
-Clique em POST /match/
-Clique em Try it out
-No campo Request body, insira os critérios desejados, por exemplo:
-json
-{
-  "faixa_etaria": "55+",
-  "grupo_sub_representado": true,
-  "limite": 5
-}
-Clique em Execute
-Veja o resultado abaixo: retorno dos candidatos, índice de inclusão e total encontrado
-
-✅ Todos os testes são feitos em tempo real, consultando diretamente o banco de dados configurado.
-Versão: 0.1.0
-
-# 📋 TESTE COMPLETO E DOCUMENTAÇÃO FINAL
-
+### 8. 📋 TESTE COMPLETO E DOCUMENTAÇÃO FINAL
 **Projeto:** App BiT — Motor de Matching Inclusivo  
 **Versão:** 0.1.0  
 **Base de Dados:** Vísent (Tabela `assinantes` + `vagas`)  
