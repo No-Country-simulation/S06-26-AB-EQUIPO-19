@@ -49,11 +49,11 @@ Exemplos:
 Quando terminar, abre um Pull Request no GitHub:
 - Base: `main`
 - Compare: sua branch
-- Avisa o **Bauer** no Discord para revisar
+- Avisa o **arquiteto do projeto** no Discord para revisar
 
 ### 4. Merge
 
-O Bauer faz o merge depois de revisar. Não faça merge sem avisar.
+O arquiteto faz o merge depois de revisar. Não faça merge sem avisar.
 
 ---
 
@@ -78,4 +78,4 @@ Esses itens já estão no `.gitignore`. Se aparecer algum desses no seu commit, 
 
 ---
 
-*Dúvidas? Fala com o Bauer no Discord.*
+*Dúvidas? Fala com o arquiteto do projeto no Discord.*
