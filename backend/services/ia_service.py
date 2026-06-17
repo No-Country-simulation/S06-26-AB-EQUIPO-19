@@ -13,7 +13,6 @@ TODO (time de back-end / IA):
 - O system prompt está documentado em /SYSTEM_PROMPT_APP_BIT.md
 """
 
-
 def calcular_score(
     skills_exigidas: str,
     skills_candidato: str,

@@ -1,79 +1,95 @@
 # -*- coding: utf-8 -*-
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from sqlalchemy import and_
+from typing import List, Optional
 from models.schemas import MatchRequest, MatchResponse, CandidatoResult
 from config.database import get_db
+# IMPORTA APENAS O QUE EXISTE: Assinante
 from models.models_db import Assinante
 
 router = APIRouter(prefix="/match", tags=["Matching"])
 
-@router.post("/", response_model=MatchResponse)
+@router.post("/", response_model=MatchResponse, status_code=200)
 def gerar_match(filtros: MatchRequest, db: Session = Depends(get_db)):
     """
-    🤝 Motor de Matching Inclusivo - App BiT
-    ✅ Base: 200k assinantes RMBF
-    ✅ REGRA: Sem viés de gênero, raça ou idade
-    ✅ Filtros permitidos: Escolaridade, Renda, Localização
-    ✅ Critérios ESG: Incentivo à diversidade
+    Motor de Matching Inclusivo - App BiT
+    Base: Tabela ASSINANTES (estrutura real)
+    Campos: assinante_hash, home_cluster, home_municipio, income_cluster, age_group, mobility_pattern, flag_flagship
+    Critérios ESG: flag_flagship = 1
     """
     try:
-        # Inicia consulta
         query = db.query(Assinante)
 
-        # 🎯 FILTROS PERMITIDOS (HABILIDADES / CONHECIMENTO)
-        if filtros.escolaridade_minima:
-            # Compara texto exato ou contém
-            query = query.filter(Assinante.escolaridade.ilike(f"%{filtros.escolaridade_minima}%"))
-
-        if filtros.faixa_salarial:
-            query = query.filter(Assinante.faixa_salarial.ilike(f"%{filtros.faixa_salarial}%"))
-
+        # 🔍 FILTROS ALINHADOS COM CAMPOS REAIS
         if filtros.municipio:
-            query = query.filter(Assinante.municipio.ilike(f"%{filtros.municipio}%"))
+            # Campo real: home_municipio
+            query = query.filter(Assinante.home_municipio.ilike(f"%{filtros.municipio}%"))
 
-        # 🚫 FILTROS PROIBIDOS (ANTI-VIÉS)
-        # Gênero, Idade, Raça -> IGNORADOS AUTOMATICAMENTE
-        # Mesmo que enviados na requisição, não são usados na busca
+        if filtros.regiao:
+            # Campo real: home_cluster (bairro/região)
+            query = query.filter(Assinante.home_cluster.ilike(f"%{filtros.regiao}%"))
 
-        # 🟢 CRITÉRIO ESG: Deficiência -> FILTRA SE SOLICITADO
-        if filtros.deficiente is not None:
-            query = query.filter(Assinante.deficiente == filtros.deficiente)
+        if filtros.renda:
+            # Campo real: income_cluster (valores: A, B, C)
+            query = query.filter(Assinante.income_cluster == filtros.renda.upper())
 
-        # 📊 LIMITA E ORDENA (sem usar dados pessoais)
-        candidatos_bd = query.limit(50).all()
+        if filtros.faixa_etaria:
+            # Campo real: age_group (18-24, 25-34, 55+)
+            query = query.filter(Assinante.age_group == filtros.faixa_etaria)
 
-        # 📋 MONTAR RESPOSTA COM ÍNDICE DE INCLUSÃO
-        lista_candidatos = []
-        for cand in candidatos_bd:
-            # Calcula índice ESG (diferencial do projeto)
-            indice_inclusao = 0.80 # Base
+        if filtros.mobilidade is not None:
+            # Campo real: mobility_pattern → INTENSA / MODERADA
+            if filtros.mobilidade:
+                query = query.filter(Assinante.mobility_pattern == "INTENSA")
+            else:
+                query = query.filter(Assinante.mobility_pattern.in_(["MODERADA", "BAIXA"]))
 
-            # Incentivo: Mulheres (+10%)
-            if hasattr(cand, 'genero') and cand.genero == "Feminino":
-                indice_inclusao += 0.10
-            # Incentivo: Pessoas com deficiência (+10%)
-            if hasattr(cand, 'deficiente') and cand.deficiente == True:
-                indice_inclusao += 0.10
-            # Incentivo: 50+ (+10%)
-            if hasattr(cand, 'idade') and getattr(cand, 'idade', 0) > 50:
-                indice_inclusao += 0.10
+        # CRITÉRIO ESG: flag_flagship = 1
+        if filtros.grupo_sub_representado is not None:
+            valor = 1 if filtros.grupo_sub_representado else 0
+            query = query.filter(Assinante.flag_flagship == valor)
 
-            # Monta objeto de retorno
-            lista_candidatos.append(CandidatoResult(
-                id = cand.assinante_hash,
-                perfil = f"Profissional de {getattr(cand, 'ocupacao', 'área geral')}",
-                escolaridade = getattr(cand, 'escolaridade', 'Não informado'),
-                localizacao = f"{getattr(cand, 'municipio', '')} - {getattr(cand, 'bairro', '')}".strip(" -"),
-                indice_inclusao = round(min(indice_inclusao, 1.0), 2) # Máximo 1.0
+        # BUSCA OS DADOS
+        assinantes_bd = query.all()
+
+        # CÁLCULO DO ÍNDICE DE INCLUSÃO
+        lista_resultado = []
+        for a in assinantes_bd:
+            score = 0.0
+
+            # REGRAS DE PONTUAÇÃO
+            if a.flag_flagship == 1:
+                score += 0.4  # Maior peso para grupos sub-representados
+            if a.age_group in ["55+", "18-24"]:
+                score += 0.3
+            if a.mobility_pattern == "INTENSA":
+                score += 0.2
+            if a.income_cluster in ["B", "C"]:
+                score += 0.1  # Incentiva menor renda
+
+            indice_inclusao = round(min(score, 1.0), 2)
+
+            # MONTAGEM DO RETORNO (SEM CAMPO QUE NÃO EXISTE)
+            lista_resultado.append(CandidatoResult(
+                id=a.assinante_hash,
+                perfil=a.ocupacao,  # Usa a propriedade que já existe
+                detalhes=f"Renda: {a.income_cluster} | Idade: {a.age_group} | Mobilidade: {a.mobility_pattern}",
+                localizacao=f"{a.home_municipio} - Região: {a.home_cluster}",
+                indice_inclusao=indice_inclusao
             ))
 
+        # ORDENAÇÃO
+        lista_resultado.sort(key=lambda x: x.indice_inclusao, reverse=True)
+
+        # LIMITE
+        if filtros.limite and filtros.limite > 0:
+            lista_resultado = lista_resultado[:filtros.limite]
+
         return MatchResponse(
-            total_encontrados = len(lista_candidatos),
-            candidatos = lista_candidatos
+            total_encontrados=len(assinantes_bd),
+            candidatos=lista_resultado
         )
 
     except Exception as e:
-        print("ERRO NA ROTA MATCH:", str(e))
-        # Retorna vazio mas sem travar
-        return MatchResponse(total_encontrados=0, candidatos=[])
+        print("ERRO MATCH:", str(e))
+        raise HTTPException(status_code=422, detail=f"Erro: {str(e)}")
