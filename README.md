@@ -1,17 +1,21 @@
 # App BiT — Motor de Matching Inclusivo 🤝
 
-API B2B para recrutamento e seleção com **filtro anti-viés** e **critérios ESG**, desenvolvida com base em dados reais da Vísent.
+Repositório oficial da **Equipe 19** — Hackathon No Country S06-26.
 
-> ⚠️ **Observação importante**: Este repositório contém apenas o Backend (API). O Frontend da aplicação ainda não foi implementado ou integrado.
+Plataforma B2B que conecta empresas com metas ESG a talentos de grupos sub-representados. Um motor de IA calcula o score de compatibilidade técnica com filtro anti-viés, e dados reais de geolocalização mostram onde esses talentos estão concentrados por região.
 
 ---
 
-## ✨ Funcionalidades
-- **Health Check**: Verificação de status e disponibilidade da API
-- **Vagas**: Cadastro, listagem e gerenciamento de oportunidades com critérios ESG
-- **Matching**: Busca inteligente de candidatos, ranqueada por **Índice de Inclusão**
-- **Insights**: Dados de geolocalização, concentração e fluxo de talentos
-- **Dashboard B2C**: Métricas de diversidade, perfil demográfico e qualificação da base
+## Índice
+
+- [O Desafio](#o-desafio)
+- [Arquitetura do Sistema](#arquitetura-do-sistema)
+- [Stack Tecnológica](#stack-tecnológica)
+- [Endpoints da API](#endpoints-da-api)
+- [Variáveis de Ambiente](#variáveis-de-ambiente)
+- [Como Rodar Localmente](#como-rodar-localmente)
+- [Estrutura de Pastas](#estrutura-de-pastas)
+- [Equipe](#equipe)
 
 ---
 
@@ -40,18 +44,15 @@ API B2B para recrutamento e seleção com **filtro anti-viés** e **critérios E
 
 ## 🚀 Como executar o projeto na íntegra
 
-Siga todos os passos abaixo para configurar, rodar e testar a API:
+<img width="1174" height="373" alt="Diagrama de Blocos" src="https://github.com/user-attachments/assets/df259499-560a-4b7a-be3c-7ed48a4e6323" />
 
-### 1. Pré-requisitos
-- Ter o **Python 3.12** instalado
-- Ter o **MySQL** instalado e rodando
-- Ter o **Git** instalado
-
-### 2. Clonar o repositório
-```bash
-git clone https://github.com/seu-usuario/seu-repositorio.git
-cd S06-26-AB-EQUIPO-19
-```
+**Fluxo principal:**
+1. Recrutador acessa o portal e define filtros ESG no Front-end
+2. Front-end envia `POST /match` com os dados da vaga para o Back-end
+3. Back-end consulta candidatos no Banco de Dados MySQL
+4. Back-end envia perfis para o Motor de IA (Google Gemini) e recebe scores
+5. Back-end consulta dados geográficos reais do dataset Vísent CDRView
+6. Shortlist com scores e badges é retornada ao Front-end
 
 ### 3. Criar e ativar ambiente virtual (recomendado)
 # Criar ambiente
@@ -83,36 +84,16 @@ DB_PASSWORD=sua_senha
 DB_NAME=appbit_hackathon
 ```
 
-### 6. Preparar o Banco de Dados
-Acesse o seu MySQL via linha de comando ou Workbench
-Execute o script de criação: `backend/database/schema.sql`
-Execute o script de população de dados: `backend/database/insert.sql`
+## Stack Tecnológica
 
-# Exemplo via linha de comando:
-```bash
-mysql -u root -p < backend/database/schema.sql
-mysql -u root -p < backend/database/insert.sql
-```
-### 7. Rodar o servidor da API
-# Executar na pasta raiz do projeto
-```bash
-python3 -m uvicorn backend.main:app --reload --host 0.0.0.0 --port 8080
-```
-
-📌 O servidor estará disponível em: http://localhost:8080
-
-### 8. 📋 TESTE COMPLETO E DOCUMENTAÇÃO FINAL
-**Projeto:** App BiT — Motor de Matching Inclusivo  
-**Versão:** 0.1.0  
-**Base de Dados:** Vísent (Tabela `assinantes` + `vagas`)  
-**Documentação Swagger:** http://localhost:8080/docs
-
----
-
-## 🩺 1. HEALTH CHECK → `GET /`
-
-### ✅ Objetivo
-Validar que a API está online e funcional.
+| Camada | Tecnologia | Status |
+|--------|-----------|--------|
+| Back-end | Python / FastAPI | ✅ Implementado |
+| Banco de Dados | MySQL + SQLAlchemy | ✅ Implementado |
+| Motor de IA | Google Gemini (AI Studio) | ✅ Implementado |
+| Dados Geográficos | Vísent CDRView (dataset real) | ✅ Implementado |
+| Front-end | React.js | 🔄 Em desenvolvimento |
+| Deploy | Render | ⏳ Pendente |
 
 ### ▶️ Ação
 1. Acesse `GET /`
@@ -129,13 +110,11 @@ Validar que a API está online e funcional.
 }
 ```
 
-### 📌 Status
+## Endpoints da API
 
-| Status | Resultado |
-|----------|----------|
-| ✅ 200 OK | API online e funcional |
+Base URL local: `http://localhost:8080`
 
-**Observação:** Sistema operacional e versão retornados corretamente.
+Documentação interativa (Swagger): `http://localhost:8080/docs`
 
 ---
 
@@ -144,40 +123,18 @@ Validar que a API está online e funcional.
 ### ✅ Objetivo
 Listar todas as vagas cadastradas, tratando valores nulos e convertendo critérios ESG para lista.
 
-### ▶️ Ação
-1. Acesse `GET /vagas/`
-2. Clique em **Try it out**
-3. Clique em **Execute**
-
-### 📤 Resultado Esperado
+Recebe filtros de diversidade e retorna shortlist de candidatos com índice de inclusão.
 
 ```json
-[
-  {
-    "id": 1,
-    "cargo": "Analista de RH",
-    "descricao": "Atuar com processos seletivos inclusivos",
-    "escolaridade_requerida": "",
-    "faixa_salarial": "R$ 3.000,00 a R$ 4.500,00",
-    "localizacao": "Palhoça - SC",
-    "criterios_esg": [],
-    "status": "Publicada"
-  },
-  {
-    "id": 4,
-    "cargo": "Desenvolvedor Python",
-    "descricao": "Criar soluções com FastAPI e acessibilidade",
-    "escolaridade_requerida": "Superior Completo",
-    "faixa_salarial": "R$ 5.000,00 a R$ 7.000,00",
-    "localizacao": "Ipu - CE",
-    "criterios_esg": [
-      "55+",
-      "PcD",
-      "Grupo Sub-representado"
-    ],
-    "status": "Publicada"
-  }
-]
+{
+  "municipio": "Florianópolis",
+  "regiao": "Centro",
+  "renda": "B",
+  "faixa_etaria": "25-34",
+  "mobilidade": true,
+  "grupo_sub_representado": true,
+  "limite": 10
+}
 ```
 
 ### 📌 Status
@@ -202,45 +159,72 @@ Cadastrar uma nova vaga com critérios ESG, principal diferencial do projeto.
 
 ```json
 {
-  "cargo": "Engenheiro de Dados",
-  "descricao": "Trabalhar com dados de mobilidade e inclusão",
-  "requisito_perfil": "Superior Completo",
-  "faixa_salarial": "R$ 6.000,00 a R$ 9.000,00",
-  "localizacao": "Florianópolis - SC",
-  "criterios_esg": [
-    "PcD",
-    "Grupo Sub-representado"
+  "total_encontrados": 48,
+  "candidatos": [
+    {
+      "id": 7,
+      "perfil": "Perfil Renda B",
+      "detalhes": "Renda: B | Idade: 25-34 | Mobilidade: INTENSA",
+      "localizacao": "Florianópolis - Região: Centro",
+      "indice_inclusao": 0.9
+    }
   ]
 }
 ```
 
-4. Clique em **Execute**
+> ⚠️ **Segurança:** o endpoint **não retorna** `nome`, `email`, `genero`, `raca` ou qualquer atributo pessoal identificável.
 
-### 📤 Resultado Esperado
+---
 
+### `GET /vagas`
+
+Lista todas as vagas publicadas.
+
+**Response `200 OK`:**
+```json
+[
+  {
+    "id": 1,
+    "cargo": "Analista de Dados",
+    "descricao": "Vaga para analista com foco em diversidade",
+    "escolaridade_requerida": "Superior Completo",
+    "faixa_salarial": "R$ 4.000 - R$ 6.000",
+    "localizacao": "Florianópolis",
+    "criterios_esg": ["PcD", "Mulheres em Tech"],
+    "status": "Publicada"
+  }
+]
+```
+
+---
+
+### `POST /vagas`
+
+Publica uma nova vaga no sistema.
+
+**Request Body:**
 ```json
 {
-  "id": 5,
-  "cargo": "Engenheiro de Dados",
-  "descricao": "Trabalhar com dados de mobilidade e inclusão",
-  "escolaridade_requerida": "Superior Completo",
-  "faixa_salarial": "R$ 6.000,00 a R$ 9.000,00",
-  "localizacao": "Florianópolis - SC",
-  "criterios_esg": [
-    "PcD",
-    "Grupo Sub-representado"
-  ],
-  "status": "Publicada"
+  "cargo": "Desenvolvedora Back-end Pleno",
+  "descricao": "Vaga com foco em inclusão de grupos sub-representados",
+  "faixa_salarial": "R$ 6.000 - R$ 9.000",
+  "localizacao": "Florianópolis",
+  "criterios_esg": ["Negros e Pardos", "Mulheres em Tech"]
 }
 ```
 
-### 📌 Status
-
-| Status | Resultado |
-|----------|----------|
-| ✅ 201 Created | Cadastro realizado com sucesso |
-
-**Observação:** Após o cadastro, execute novamente `GET /vagas/` para confirmar a inclusão da nova vaga.
+**Response `201 Created`:**
+```json
+{
+  "id": 12,
+  "cargo": "Desenvolvedora Back-end Pleno",
+  "descricao": "Vaga com foco em inclusão de grupos sub-representados",
+  "faixa_salarial": "R$ 6.000 - R$ 9.000",
+  "localizacao": "Florianópolis",
+  "criterios_esg": ["Negros e Pardos", "Mulheres em Tech"],
+  "status": "Publicada"
+}
+```
 
 ---
 
@@ -249,13 +233,8 @@ Cadastrar uma nova vaga com critérios ESG, principal diferencial do projeto.
 ### ✅ Objetivo
 Buscar candidatos utilizando filtros anti-viés, critérios ESG e ranqueamento por Índice de Inclusão.
 
-**Base de Dados:** Tabela `assinantes` (dados reais da Vísent)
-
----
-
-### 📌 TESTE 4.1 — Critério ESG + Faixa Etária
-
-#### ▶️ JSON de Entrada
+Retorna dados reais de concentração de pessoas por região.
+Fonte: **Vísent CDRView** — dados de antenas Anatel de Florianópolis.
 
 ```json
 {
@@ -272,18 +251,16 @@ Buscar candidatos utilizando filtros anti-viés, critérios ESG e ranqueamento p
   "total_encontrados": 7590,
   "candidatos": [
     {
-      "id": 81,
-      "perfil": "Perfil Renda C",
-      "detalhes": "Renda: C | Idade: 55+ | Mobilidade: INTENSA",
-      "localizacao": "São José - Região: SAO_JOSE_BARREIROS",
-      "indice_inclusao": 1
+      "regiao": "Florianópolis - CBD_BEIRAMAR",
+      "concentracao": 0.9,
+      "cobertura_rede": "4G/5G",
+      "perfis_disponiveis": 1240
     },
     {
-      "id": 331,
-      "perfil": "Perfil Renda B",
-      "detalhes": "Renda: B | Idade: 55+ | Mobilidade: INTENSA",
-      "localizacao": "Palhoça - Região: PALHOCA_CENTRO",
-      "indice_inclusao": 1
+      "regiao": "Florianópolis - UFSC",
+      "concentracao": 0.75,
+      "cobertura_rede": "4G/5G",
+      "perfis_disponiveis": 890
     }
   ]
 }
@@ -299,68 +276,37 @@ Buscar candidatos utilizando filtros anti-viés, critérios ESG e ranqueamento p
 
 ---
 
-### 📌 TESTE 4.2 — Município + Faixa de Renda
+### `GET /dashboard/saude-time`
 
-#### ▶️ JSON de Entrada
+Retorna métricas de distribuição de perfis por renda, idade e região.
 
+**Response `200 OK`:**
 ```json
 {
-  "municipio": "Palhoça",
-  "renda": "C",
-  "limite": 3
+  "total_geral_assinantes": 215400,
+  "dados_por_perfil": [...],
+  "dados_por_regiao": [...],
+  "data_atualizacao": "2026-06-16"
 }
 ```
-
-#### 📌 Status
-
-| Status | Resultado |
-|----------|----------|
-| ✅ 200 OK | Filtros aplicados corretamente |
-
-**Observação:** Os filtros podem ser utilizados individualmente ou combinados.
-
-**Campos disponíveis:**
-
-- `municipio`
-- `regiao`
-- `renda` (A, B ou C)
-- `faixa_etaria`
-- `mobilidade`
 
 ---
 
 ## 📊 5. INSIGHTS E GEOLOCALIZAÇÃO → `GET /insights/`
 
-### ✅ Objetivo
-Apresentar mapa de talentos, concentração de usuários e cobertura por região.
+Crie um arquivo `.env` dentro da pasta `backend/` copiando o `.env.example`:
 
-### ▶️ Ação
-1. Acesse `GET /insights/`
-2. Clique em **Try it out**
-3. Clique em **Execute**
-
-### 📤 Resultado Esperado
-
-```json
-{
-  "mapa_talentos": [
-    {
-      "regiao": "Florianópolis",
-      "concentracao": 0.94,
-      "cobertura_rede": "5G",
-      "perfis_disponiveis": 89200
-    },
-    {
-      "regiao": "Palhoça",
-      "concentracao": 0.79,
-      "cobertura_rede": "4G/5G",
-      "perfis_disponiveis": 38500
-    }
-  ]
-}
+```bash
+cp backend/.env.example backend/.env
 ```
 
-### 📌 Status
+| Variável | Descrição |
+|----------|-----------|
+| `DB_HOST` | Host do banco de dados (padrão: `localhost`) |
+| `DB_USER` | Usuário do MySQL |
+| `DB_PASSWORD` | Senha do MySQL |
+| `DB_NAME` | Nome do banco (padrão: `appbit`) |
+| `IA_API_KEY` | Chave da API do Google AI Studio (Gemini) |
 
 | Status | Resultado |
 |----------|----------|
@@ -372,83 +318,90 @@ Apresentar mapa de talentos, concentração de usuários e cobertura por região
 
 ## 📈 6. DASHBOARD B2C — SAÚDE DO TIME → `GET /dashboard/saude-time`
 
-### ✅ Objetivo
-Exibir métricas de diversidade, qualificação e distribuição demográfica.
+### Pré-requisitos
+
+- Python 3.10+
+- MySQL rodando localmente
+- Chave de API do [Google AI Studio](https://aistudio.google.com) (gratuito)
+
+### Passo a passo
 
 ### ▶️ Ação
 1. Acesse `GET /dashboard/saude-time`
 2. Clique em **Try it out**
 3. Clique em **Execute**
 
-### 📤 Resultado Esperado
+# 2. Configure as variáveis de ambiente
+cp backend/.env.example backend/.env
+# Edite o backend/.env com suas credenciais do banco e a IA_API_KEY
 
-```json
-{
-  "total_geral_assinantes": 215400,
-  "dados_por_perfil": [
-    {
-      "perfil": "Analista de Sistemas",
-      "quantidade": 32400,
-      "percentual_total": 15.04,
-      "media_escolaridade": "Superior Completo",
-      "indice_qualificacao": 0.92
-    },
-    {
-      "perfil": "Assistente Administrativo",
-      "quantidade": 41200,
-      "percentual_total": 19.13,
-      "media_escolaridade": "Médio Completo",
-      "indice_qualificacao": 0.78
-    }
-  ],
-  "dados_por_regiao": [
-    {
-      "regiao": "Florianópolis",
-      "total_pessoas": 89200,
-      "distribuicao_perfis": {
-        "Analista": 14500,
-        "Desenvolvedor": 12800
-      },
-      "indice_densidade": 0.94
-    }
-  ],
-  "data_atualizacao": "2026-06-16"
-}
+# 3. Crie o banco de dados
+# No MySQL Workbench ou terminal MySQL, execute:
+# backend/database/schema.sql   (cria as tabelas)
+# backend/database/insert.sql   (insere dados de exemplo)
+
+# 4. Carregue os dados da Vísent no banco
+cd backend
+python carregar_dados.py
+
+# 5. Instale as dependências
+pip install -r requirements.txt
+
+# 6. Inicie o servidor
+uvicorn main:app --reload --port 8080
 ```
+
+Acesse `http://localhost:8080/docs` para explorar todos os endpoints via Swagger.
+
+---
 
 ### 📌 Status
 
-| Status | Resultado |
-|----------|----------|
-| ✅ 200 OK | Dashboard carregado com sucesso |
-
-**Observação:** Base contendo **215.400 usuários**, com métricas de perfil, escolaridade, qualificação e distribuição regional.
+```
+S06-26-AB-EQUIPO-19/
+├── backend/
+│   ├── config/
+│   │   └── database.py          # Conexão MySQL via SQLAlchemy
+│   ├── database/
+│   │   ├── schema.sql            # Criação das tabelas
+│   │   └── insert.sql            # Dados de exemplo
+│   ├── models/
+│   │   ├── models_db.py          # Modelos SQLAlchemy (tabelas)
+│   │   └── schemas.py            # Schemas Pydantic (request/response)
+│   ├── routes/
+│   │   ├── match.py              # POST /match — motor de matching
+│   │   ├── vagas.py              # GET e POST /vagas
+│   │   ├── insights.py           # GET /insights — mapa de talentos
+│   │   └── dashboard.py          # GET /dashboard/saude-time
+│   ├── services/
+│   │   ├── ia_service.py         # Integração Google Gemini
+│   │   └── geo_service.py        # Dados geográficos Vísent
+│   ├── carregar_dados.py         # Script para popular o banco com CSVs
+│   ├── main.py                   # Entrada da aplicação FastAPI
+│   └── requirements.txt
+├── dataset-visent/
+│   └── tensores/
+│       └── tensor_concentracao.csv  # Dataset Vísent CDRView
+├── frontend/                    # 🔄 Em desenvolvimento (React.js)
+├── SYSTEM_PROMPT_APP_BIT.md     # System prompt do motor de IA
+├── .env.example
+├── .gitignore
+└── README.md
+```
 
 ---
 
 # ✅ RESUMO FINAL DE VALIDAÇÃO
 
-| Funcionalidade | Método | Rota | Status | Observação |
-|---------------|---------|-------|---------|------------|
-| Saúde da API | GET | `/` | ✅ 200 | API online |
-| Listar Vagas | GET | `/vagas/` | ✅ 200 | Trata nulos e converte ESG |
-| Publicar Vaga | POST | `/vagas/` | ✅ 201 | Cadastro realizado |
-| Matching Inclusivo | POST | `/match/` | ✅ 200 | 7.590 candidatos encontrados |
-| Insights Geográficos | GET | `/insights/` | ✅ 200 | Dados regionais |
-| Dashboard ESG | GET | `/dashboard/saude-time` | ✅ 200 | 215.400 usuários analisados |
+| Nome | Papel | GitHub |
+|------|-------|--------|
+| Matheus Bauer | Architect (Software / Solution Architect) | [@obauercosta](https://github.com/obauercosta) |
+| Carlos André Alves Bezerra | Backend Developer | [@andrealves8](https://github.com/andrealves8) |
+| Geordani Machado | Frontend Developer | [@Geordani-Machado](https://github.com/Geordani-Machado) |
+| Fernando Henrique Pereira Fernandez | Data Analyst | — |
+| Wesley Muniz França | Graphic Designer | — |
+| Erick Levi Souza Machado | Game Developer | — |
 
 ---
 
-## 🎯 Conclusão
-
-Todos os endpoints foram testados com sucesso e retornaram os resultados esperados. O sistema demonstrou estabilidade, consistência dos dados e funcionamento correto das funcionalidades de:
-
-- Matching Inclusivo
-- Gestão de Vagas
-- Insights Geográficos
-- Dashboard ESG
-- Health Check
-
-A versão **0.1.0** encontra-se validada e pronta para evolução das próximas funcionalidades do projeto.
-Branch: feat/backend-base-match-route
-plaintext
+*Hackathon No Country · S06-26 · Equipe 19*
