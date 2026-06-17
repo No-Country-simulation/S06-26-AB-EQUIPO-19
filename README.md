@@ -1,4 +1,4 @@
-# App BiT — Motor de Matching Inclusivo 🤝
+# App BiT — Motor de Matching Inclusivo
 
 Repositório oficial da **Equipe 19** — Hackathon No Country S06-26.
 
@@ -9,8 +9,8 @@ Plataforma B2B que conecta empresas com metas ESG a talentos de grupos sub-repre
 ## Índice
 
 - [O Desafio](#o-desafio)
-- [Arquitetura do Sistema](#arquitetura-do-sistema)
 - [Stack Tecnológica](#stack-tecnológica)
+- [Banco de Dados](#banco-de-dados)
 - [Endpoints da API](#endpoints-da-api)
 - [Variáveis de Ambiente](#variáveis-de-ambiente)
 - [Como Rodar Localmente](#como-rodar-localmente)
@@ -19,70 +19,13 @@ Plataforma B2B que conecta empresas com metas ESG a talentos de grupos sub-repre
 
 ---
 
-## 🛠️ Tecnologias Utilizadas
-- **Python 3.12** — Linguagem principal de desenvolvimento
-- **FastAPI** — Framework para criação de APIs rápidas e modernas
-- **SQLAlchemy** — ORM para manipulação e consultas no banco de dados
-- **Uvicorn** — Servidor ASGI para execução da aplicação
-- **MySQL** — Banco de dados relacional utilizado para testes e desenvolvimento
-- **OAS 3.1** — Documentação automática e interface de testes via **Swagger UI**
+## O Desafio
+
+Empresas com metas ESG não conseguem encontrar e contratar talentos de grupos sub-representados de forma eficiente e sem viés.
+
+Nossa solução: um portal B2B onde empresas publicam vagas com filtros de diversidade, e um agente de IA retorna uma shortlist de candidatos com score de compatibilidade e badge de diversidade geográfica, sem expor atributos pessoais ao processo de seleção.
 
 ---
-
-## 📊 Estrutura do Banco de Dados
-- Banco utilizado: **MySQL**
-- Modelo alinhado com a estrutura de dados da Vísent
-- **Tabelas principais**: `assinantes`, `antenas`, `concentracao`, `vagas`, `empresas`
-- **Campos chave para matching**: `home_municipio`, `income_cluster`, `age_group`, `mobility_pattern`, `flag_flagship`
-- 📂 **Scripts SQL disponíveis**:
-  - Criação das tabelas e índices: `backend/database/schema.sql`
-  - Inserção de dados de exemplo/teste: `backend/database/insert.sql` 
-- 📎 **Dados completos**: Os arquivos CSV originais e completos utilizados no projeto estão disponíveis para download no link abaixo:
-  > **[Acessar base de dados Vísent - Arquivos CSV](COLE_SEU_LINK_AQUI)**
-
----
-
-## 🚀 Como executar o projeto na íntegra
-
-<img width="1174" height="373" alt="Diagrama de Blocos" src="https://github.com/user-attachments/assets/df259499-560a-4b7a-be3c-7ed48a4e6323" />
-
-**Fluxo principal:**
-1. Recrutador acessa o portal e define filtros ESG no Front-end
-2. Front-end envia `POST /match` com os dados da vaga para o Back-end
-3. Back-end consulta candidatos no Banco de Dados MySQL
-4. Back-end envia perfis para o Motor de IA (Google Gemini) e recebe scores
-5. Back-end consulta dados geográficos reais do dataset Vísent CDRView
-6. Shortlist com scores e badges é retornada ao Front-end
-
-### 3. Criar e ativar ambiente virtual (recomendado)
-# Criar ambiente
-```bash
-python3 -m venv venv
-```
-# Ativar no Linux / macOS
-```bash
-source venv/bin/activate
-```
-# Ativar no Windows
-```bash
-venv\Scripts\activate
-```
-4. Instalar dependências
-pip install -r requirements.txt
-
-5. Configurar variáveis de ambiente
-# Copiar o arquivo de exemplo
-```bash
-cp backend/.env.example backend/.env
-```
-dite o arquivo backend/.env e insira suas credenciais do MySQL:
-```bash
-DB_HOST=localhost
-DB_PORT=3306
-DB_USER=seu_usuario
-DB_PASSWORD=sua_senha
-DB_NAME=appbit_hackathon
-```
 
 ## Stack Tecnológica
 
@@ -95,20 +38,18 @@ DB_NAME=appbit_hackathon
 | Front-end | React.js | 🔄 Em desenvolvimento |
 | Deploy | Render | ⏳ Pendente |
 
-### ▶️ Ação
-1. Acesse `GET /`
-2. Clique em **Try it out**
-3. Clique em **Execute**
+---
 
-### 📤 Resultado Esperado
+## Banco de Dados
 
-```json
-{
-  "status": "online",
-  "versao": "0.1.0",
-  "nome": "App BiT — Motor de Matching Inclusivo"
-}
-```
+- Banco utilizado: **MySQL**
+- Tabelas principais: `assinantes`, `antenas`, `concentracao`, `vagas`, `empresas`
+- Campos chave para matching: `home_municipio`, `income_cluster`, `age_group`, `mobility_pattern`, `flag_flagship`
+- Scripts SQL:
+  - `backend/database/schema.sql` — cria as tabelas e índices
+  - `backend/database/insert.sql` — insere dados de exemplo
+
+---
 
 ## Endpoints da API
 
@@ -118,65 +59,21 @@ Documentação interativa (Swagger): `http://localhost:8080/docs`
 
 ---
 
-## 📋 2. VAGAS → `GET /vagas/`
+### GET /
 
-### ✅ Objetivo
-Listar todas as vagas cadastradas, tratando valores nulos e convertendo critérios ESG para lista.
+Health check — verifica se a API está no ar.
 
-Recebe filtros de diversidade e retorna shortlist de candidatos com índice de inclusão.
-
+**Response `200 OK`:**
 ```json
 {
-  "municipio": "Florianópolis",
-  "regiao": "Centro",
-  "renda": "B",
-  "faixa_etaria": "25-34",
-  "mobilidade": true,
-  "grupo_sub_representado": true,
-  "limite": 10
+  "status": "ok",
+  "message": "App BiT API está no ar."
 }
 ```
 
-### 📌 Status
-
-| Status | Resultado |
-|----------|----------|
-| ✅ 200 OK | Consulta realizada com sucesso |
-
-**Observação:** Valores nulos são retornados como `""` e critérios ESG como listas (`[]`).
-
 ---
 
-## 📝 3. VAGAS → `POST /vagas/`
-
-### ✅ Objetivo
-Cadastrar uma nova vaga com critérios ESG, principal diferencial do projeto.
-
-### ▶️ Ação
-1. Acesse `POST /vagas/`
-2. Clique em **Try it out**
-3. Insira o JSON abaixo:
-
-```json
-{
-  "total_encontrados": 48,
-  "candidatos": [
-    {
-      "id": 7,
-      "perfil": "Perfil Renda B",
-      "detalhes": "Renda: B | Idade: 25-34 | Mobilidade: INTENSA",
-      "localizacao": "Florianópolis - Região: Centro",
-      "indice_inclusao": 0.9
-    }
-  ]
-}
-```
-
-> ⚠️ **Segurança:** o endpoint **não retorna** `nome`, `email`, `genero`, `raca` ou qualquer atributo pessoal identificável.
-
----
-
-### `GET /vagas`
+### GET /vagas
 
 Lista todas as vagas publicadas.
 
@@ -198,7 +95,7 @@ Lista todas as vagas publicadas.
 
 ---
 
-### `POST /vagas`
+### POST /vagas
 
 Publica uma nova vaga no sistema.
 
@@ -228,28 +125,52 @@ Publica uma nova vaga no sistema.
 
 ---
 
-## 🤝 4. MATCHING → `POST /match/`
+### POST /match
 
-### ✅ Objetivo
-Buscar candidatos utilizando filtros anti-viés, critérios ESG e ranqueamento por Índice de Inclusão.
+Busca candidatos com filtros anti-viés e critérios ESG, ranqueados por Índice de Inclusão.
 
-Retorna dados reais de concentração de pessoas por região.
-Fonte: **Vísent CDRView** — dados de antenas Anatel de Florianópolis.
-
+**Request Body:**
 ```json
 {
-  "faixa_etaria": "55+",
+  "municipio": "Florianópolis",
+  "regiao": "Centro",
+  "renda": "B",
+  "faixa_etaria": "25-34",
+  "mobilidade": true,
   "grupo_sub_representado": true,
-  "limite": 5
+  "limite": 10
 }
 ```
 
-#### 📤 Resultado Esperado
-
+**Response `200 OK`:**
 ```json
 {
-  "total_encontrados": 7590,
+  "total_encontrados": 48,
   "candidatos": [
+    {
+      "id": 7,
+      "perfil": "Perfil Renda B",
+      "detalhes": "Renda: B | Idade: 25-34 | Mobilidade: INTENSA",
+      "localizacao": "Florianópolis - Região: Centro",
+      "indice_inclusao": 0.9
+    }
+  ]
+}
+```
+
+> ⚠️ **Segurança:** o endpoint não retorna `nome`, `email`, `genero`, `raca` ou qualquer atributo pessoal identificável.
+
+---
+
+### GET /insights
+
+Retorna dados reais de concentração de pessoas por região.
+Fonte: Vísent CDRView — dados de antenas Anatel de Florianópolis.
+
+**Response `200 OK`:**
+```json
+{
+  "mapa_talentos": [
     {
       "regiao": "Florianópolis - CBD_BEIRAMAR",
       "concentracao": 0.9,
@@ -266,17 +187,9 @@ Fonte: **Vísent CDRView** — dados de antenas Anatel de Florianópolis.
 }
 ```
 
-#### 📌 Status
-
-| Status | Resultado |
-|----------|----------|
-| ✅ 200 OK | Matching executado com sucesso |
-
-**Observação:** Foram encontrados **7.590 candidatos**. O valor **1.0** representa a pontuação máxima do Índice de Inclusão.
-
 ---
 
-### `GET /dashboard/saude-time`
+### GET /dashboard/saude-time
 
 Retorna métricas de distribuição de perfis por renda, idade e região.
 
@@ -292,7 +205,7 @@ Retorna métricas de distribuição de perfis por renda, idade e região.
 
 ---
 
-## 📊 5. INSIGHTS E GEOLOCALIZAÇÃO → `GET /insights/`
+## Variáveis de Ambiente
 
 Crie um arquivo `.env` dentro da pasta `backend/` copiando o `.env.example`:
 
@@ -305,18 +218,14 @@ cp backend/.env.example backend/.env
 | `DB_HOST` | Host do banco de dados (padrão: `localhost`) |
 | `DB_USER` | Usuário do MySQL |
 | `DB_PASSWORD` | Senha do MySQL |
-| `DB_NAME` | Nome do banco (padrão: `appbit`) |
+| `DB_NAME` | Nome do banco (padrão: `appbit_hackathon`) |
 | `IA_API_KEY` | Chave da API do Google AI Studio (Gemini) |
 
-| Status | Resultado |
-|----------|----------|
-| ✅ 200 OK | Dados retornados corretamente |
-
-**Observação:** Exibe densidade de talentos e infraestrutura disponível por região.
+> 🔒 **Nunca suba o arquivo `.env` para o repositório.**
 
 ---
 
-## 📈 6. DASHBOARD B2C — SAÚDE DO TIME → `GET /dashboard/saude-time`
+## Como Rodar Localmente
 
 ### Pré-requisitos
 
@@ -326,28 +235,33 @@ cp backend/.env.example backend/.env
 
 ### Passo a passo
 
-### ▶️ Ação
-1. Acesse `GET /dashboard/saude-time`
-2. Clique em **Try it out**
-3. Clique em **Execute**
+```bash
+# 1. Clone o repositório
+git clone https://github.com/No-Country-simulation/S06-26-AB-EQUIPO-19.git
+cd S06-26-AB-EQUIPO-19
 
-# 2. Configure as variáveis de ambiente
+# 2. Crie e ative o ambiente virtual
+python3 -m venv venv
+source venv/bin/activate        # Linux/macOS
+venv\Scripts\activate           # Windows
+
+# 3. Instale as dependências
+pip install -r backend/requirements.txt
+
+# 4. Configure as variáveis de ambiente
 cp backend/.env.example backend/.env
 # Edite o backend/.env com suas credenciais do banco e a IA_API_KEY
 
-# 3. Crie o banco de dados
+# 5. Crie o banco de dados
 # No MySQL Workbench ou terminal MySQL, execute:
 # backend/database/schema.sql   (cria as tabelas)
 # backend/database/insert.sql   (insere dados de exemplo)
 
-# 4. Carregue os dados da Vísent no banco
+# 6. Carregue os dados da Vísent no banco
 cd backend
 python carregar_dados.py
 
-# 5. Instale as dependências
-pip install -r requirements.txt
-
-# 6. Inicie o servidor
+# 7. Inicie o servidor
 uvicorn main:app --reload --port 8080
 ```
 
@@ -355,7 +269,7 @@ Acesse `http://localhost:8080/docs` para explorar todos os endpoints via Swagger
 
 ---
 
-### 📌 Status
+## Estrutura de Pastas
 
 ```
 S06-26-AB-EQUIPO-19/
@@ -378,12 +292,14 @@ S06-26-AB-EQUIPO-19/
 │   │   └── geo_service.py        # Dados geográficos Vísent
 │   ├── carregar_dados.py         # Script para popular o banco com CSVs
 │   ├── main.py                   # Entrada da aplicação FastAPI
+│   ├── Dockerfile
 │   └── requirements.txt
 ├── dataset-visent/
 │   └── tensores/
-│       └── tensor_concentracao.csv  # Dataset Vísent CDRView
-├── frontend/                    # 🔄 Em desenvolvimento (React.js)
-├── SYSTEM_PROMPT_APP_BIT.md     # System prompt do motor de IA
+│       └── tensor_concentracao.csv
+├── SYSTEM_PROMPT_APP_BIT.md
+├── CONTRIBUTING.md
+├── docker-compose.yml
 ├── .env.example
 ├── .gitignore
 └── README.md
@@ -391,7 +307,7 @@ S06-26-AB-EQUIPO-19/
 
 ---
 
-# ✅ RESUMO FINAL DE VALIDAÇÃO
+## Equipe
 
 | Nome | Papel | GitHub |
 |------|-------|--------|
