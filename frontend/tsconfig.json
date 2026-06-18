@@ -8,6 +8,8 @@
     "jsx": "react-jsx",
     "esModuleInterop": true,
     "skipLibCheck": true,
+    // Permite importação de arquivos .json como módulos ES
+    "resolveJsonModule": true,
     "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
     "paths": {

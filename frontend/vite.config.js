@@ -13,4 +13,10 @@ export default defineConfig({
       '@': resolve(__dirname, './src'),
     },
   },
+  // Vite sometimes struggles with CommonJS modules that use `require`.
+  // Adding the problematic packages to `optimizeDeps.include` forces Vite to pre‑bundle them
+  // with esbuild, which correctly transforms the `require` calls.
+  optimizeDeps: {
+    include: ['react-simple-maps', 'prop-types'],
+  },
 });

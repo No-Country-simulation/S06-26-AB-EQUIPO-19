@@ -1,29 +1,20 @@
 import React from 'react';
-import { Routes, Route, useNavigate } from 'react-router-dom';
-import Landing from '@/pages/Landing';
-import Placeholder from '@/components/Placeholder';
+import { useState } from "react"
+import { CompanyView } from "@/pages/CompanyView";
+import { TalentView } from "@/pages/TalentView";
+import { PlatformHeader, type ViewMode } from "@/components/platform-header"
 
 const App: React.FC = () => {
-  const navigate = useNavigate();
-
-  // Navigate to the route that matches the requested fluxo.
-  const setFluxo = (fluxo: string) => {
-    // Ensure the path starts with a slash.
-    const path = fluxo.startsWith('/') ? fluxo : `/${fluxo}`;
-    navigate(path);
-  };
+  const [view, setView] = useState<ViewMode>("empresa")
 
   return (
     <div className="min-h-screen">
-      <Routes>
-        {/* Home / landing page */}
-        <Route path="/" element={<Landing setFluxo={setFluxo} />} />
-        {/* Placeholder routes for the flows referenced in Landing */}
-        <Route path="/cadastro-empresa" element={<Placeholder title="Cadastro Empresa" />} />
-        <Route path="/empresa" element={<Placeholder title="Empresa" />} />
-        <Route path="/cadastro-candidato" element={<Placeholder title="Cadastro Candidato" />} />
-        <Route path="/candidato" element={<Placeholder title="Candidato" />} />
-      </Routes>
+      <div className="min-h-screen bg-background">
+      <PlatformHeader view={view} onViewChange={setView} />
+      <main className="mx-auto max-w-7xl px-4 py-6 md:px-6 md:py-8">
+        {view === "empresa" ? <CompanyView /> : <TalentView />}
+      </main>
+    </div>
     </div>
   );
 };
