@@ -59,10 +59,10 @@ export function TalentList({ selectedState }: Props) {
           {ranked.map((c) => (
             <li
               key={c.id}
-              className="flex flex-col gap-3 p-4 transition-colors hover:bg-secondary/50 sm:flex-row sm:items-center"
+              className="flex flex-col gap-3 p-4 transition-colors hover:bg-green-500/50 sm:flex-row sm:items-center"
             >
               <div className="flex flex-1 items-center gap-3">
-                <span className="flex size-11 shrink-0 items-center justify-center rounded-full border border-border bg-secondary text-muted-foreground">
+                <span className="flex size-11 shrink-0 items-center justify-center rounded-full border border-border text-muted-foreground">
                   <UserCircle2 className="size-6" />
                 </span>
                 <div className="min-w-0">
@@ -79,11 +79,11 @@ export function TalentList({ selectedState }: Props) {
               <div className="flex items-center gap-3">
                 <Badge
                   variant="secondary"
-                  className="hidden bg-primary/10 text-[10px] text-primary sm:inline-flex"
+                  className="hidden bg-green-500 text-[10px] text-primary sm:inline-flex"
                 >
                   ID #{c.id}
                 </Badge>
-                <div className="hidden items-center gap-1 rounded-md bg-primary/5 px-2 py-1 text-[10px] font-medium text-primary md:flex">
+                <div className="hidden items-center gap-1 rounded-md bg-orange-300 px-2 py-1 text-[10px] font-medium text-primary md:flex">
                   <ShieldCheck className="size-3" />
                   Sem viés
                 </div>

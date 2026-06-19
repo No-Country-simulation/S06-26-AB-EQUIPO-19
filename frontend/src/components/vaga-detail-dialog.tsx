@@ -48,7 +48,7 @@ export function VagaDetailDialog({ job, open, onOpenChange }: Props) {
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
         <DialogHeader>
           <div className="flex items-center gap-2">
-            <span className="flex size-10 items-center justify-center rounded-md border border-border bg-secondary">
+            <span className="flex size-10 items-center justify-center rounded-md border border-border bg-green-500">
               <Briefcase className="size-5 text-primary" />
             </span>
             <div>
@@ -85,7 +85,7 @@ export function VagaDetailDialog({ job, open, onOpenChange }: Props) {
                     <Badge
                       key={c}
                       variant="secondary"
-                      className="bg-primary/10 text-[11px] text-primary"
+                      className="bg-green-500 text-[11px] text-primary"
                     >
                       <Leaf className="mr-1 size-2.5" /> {c}
                     </Badge>
@@ -95,7 +95,7 @@ export function VagaDetailDialog({ job, open, onOpenChange }: Props) {
             </>
           )}
 
-          <div className="flex items-start gap-2 rounded-md bg-secondary/50 p-3">
+          <div className="flex items-start gap-2 rounded-md bg-green-500/50 p-3">
             <ShieldCheck className="size-4 shrink-0 text-primary" />
             <p className="text-xs leading-relaxed text-muted-foreground">
               A triagem técnica desta vaga é cega: nome, gênero e foto ficam ocultos até o match.

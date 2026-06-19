@@ -20,8 +20,8 @@ export function LiveBadge({
       className={cn(
         "inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[10px] font-medium",
         live
-          ? "border-primary/30 bg-primary/10 text-primary"
-          : "border-border bg-secondary text-muted-foreground",
+          ? "border-green-500"
+          : "border-red-500 text-muted-foreground",
         className,
       )}
     >

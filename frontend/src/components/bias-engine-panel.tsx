@@ -17,7 +17,7 @@ export function BiasEnginePanel() {
     <div className="grid gap-4 md:grid-cols-2">
       <Card className="gap-0 p-5">
         <div className="flex items-center gap-2">
-          <span className="flex size-8 items-center justify-center rounded-md bg-primary/10 text-primary">
+          <span className="flex size-8 items-center justify-center rounded-md bg-green-500 text-primary">
             <Sparkles className="size-4" />
           </span>
           <div>
@@ -60,9 +60,9 @@ export function BiasEnginePanel() {
                 <span className="font-medium">{g.label}</span>
                 <span className="font-mono tabular-nums text-muted-foreground">{g.value}%</span>
               </div>
-              <div className="h-2 overflow-hidden rounded-full bg-muted">
+              <div className="h-2 overflow-hidden rounded-full bg-gray-200">
                 <span
-                  className="block h-full rounded-full bg-primary"
+                  className="block h-full rounded-full bg-green-500"
                   style={{ width: `${Math.min(100, g.value)}%` }}
                 />
               </div>

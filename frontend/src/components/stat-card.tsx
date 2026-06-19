@@ -15,7 +15,7 @@ export function StatCard({ label, value, delta, deltaPositive = true, icon: Icon
     <Card className="gap-0 p-4">
       <div className="flex items-center justify-between">
         <span className="text-xs font-medium text-muted-foreground">{label}</span>
-        <span className="flex size-7 items-center justify-center rounded-md bg-primary/10 text-primary">
+        <span className="flex size-7 items-center justify-center rounded-md bg-green-600 text-primary">
           <Icon className="size-4" />
         </span>
       </div>

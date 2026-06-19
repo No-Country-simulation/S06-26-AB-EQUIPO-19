@@ -104,7 +104,7 @@ export function BrazilMap({ selectedState, onSelectState, stateData }: Props) {
 
       {hovered && (
         <div
-          className="pointer-events-none absolute z-10 rounded-md border border-border bg-popover px-3 py-2 text-popover-foreground shadow-lg"
+          className="pointer-events-none absolute z-10 rounded-md border border-border bg-zinc-50 px-3 py-2 text-popover-foreground shadow-lg"
           style={{ left: pos.x + 14, top: pos.y + 14 }}
         >
           <p className="text-sm font-medium leading-tight">

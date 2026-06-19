@@ -38,7 +38,7 @@ export function TalentView() {
       {/* Perfil */}
       <Card className="flex flex-col items-start gap-4 p-5 sm:flex-row sm:items-center">
         <Avatar className="size-14 border border-border">
-          <AvatarFallback className="bg-secondary text-base font-medium">AF</AvatarFallback>
+          <AvatarFallback className="bg-green-500 text-base font-medium">AF</AvatarFallback>
         </Avatar>
         <div className="flex-1">
           <div className="flex items-center gap-2">
@@ -51,10 +51,10 @@ export function TalentView() {
             <span className="flex items-center gap-1 text-xs text-muted-foreground">
               <MapPin className="size-3" /> São Paulo, SP · Remoto
             </span>
-            <Badge variant="secondary" className="ml-1 bg-primary/10 text-[10px] text-primary">
+            <Badge variant="secondary" className="ml-1 bg-green-500 text-[10px] text-primary">
               Mulheres
             </Badge>
-            <Badge variant="secondary" className="bg-primary/10 text-[10px] text-primary">
+            <Badge variant="secondary" className="bg-green-500 text-[10px] text-primary">
               Pessoas negras
             </Badge>
           </div>
@@ -88,7 +88,7 @@ export function TalentView() {
               {jobs.map((job) => (
                 <li key={job.id} className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center">
                   <Avatar className="size-10 rounded-md border border-border">
-                    <AvatarFallback className="rounded-md bg-secondary text-xs font-medium">
+                    <AvatarFallback className="rounded-md bg-green-500 text-xs font-medium">
                       <Briefcase className="size-4" />
                     </AvatarFallback>
                   </Avatar>
@@ -120,7 +120,7 @@ export function TalentView() {
                           <Badge
                             key={c}
                             variant="secondary"
-                            className="bg-primary/10 text-[10px] text-primary"
+                            className="bg-green-500 text-[10px] text-primary"
                           >
                             <Leaf className="mr-1 size-2.5" /> {c}
                           </Badge>
@@ -153,7 +153,7 @@ export function TalentView() {
               {companies.map((c) => (
                 <li key={c.id} className="flex items-center gap-3 p-4">
                   <Avatar className="size-10 rounded-md border border-border">
-                    <AvatarFallback className="rounded-md bg-secondary text-xs font-medium">
+                    <AvatarFallback className="rounded-md bg-green-500 text-xs font-medium">
                       {c.initials}
                     </AvatarFallback>
                   </Avatar>

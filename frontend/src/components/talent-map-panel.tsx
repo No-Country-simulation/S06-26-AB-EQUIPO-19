@@ -95,7 +95,7 @@ export function TalentMapPanel({ selectedState, onSelectState }: Props) {
                     onClick={() => onSelectState(active ? null : r.state)}
                     className={cn(
                       "flex items-center gap-3 rounded-md px-2 py-1.5 text-left transition-colors",
-                      active ? "bg-primary/10" : "hover:bg-secondary",
+                      active ? "bg-green-500" : "hover:bg-grey-100",
                     )}
                   >
                     <span className="w-4 text-xs font-medium tabular-nums text-muted-foreground">
@@ -131,16 +131,16 @@ export function TalentMapPanel({ selectedState, onSelectState }: Props) {
                     onClick={() => onSelectState(active ? null : s.name)}
                     className={cn(
                       "flex items-center gap-3 rounded-md px-2 py-1.5 text-left transition-colors",
-                      active ? "bg-primary/10" : "hover:bg-secondary",
+                      active ? "bg-green-600" : "hover:bg-green-100",
                     )}
                   >
                     <span className="w-4 text-xs font-medium tabular-nums text-muted-foreground">
                       {i + 1}
                     </span>
                     <span className="flex-1 text-sm font-medium">{s.name}</span>
-                    <div className="hidden h-1.5 w-16 overflow-hidden rounded-full bg-muted sm:block">
+                    <div className="hidden h-1.5 w-16 overflow-hidden rounded-full bg-gray-200 sm:block">
                       <span
-                        className="block h-full rounded-full bg-primary"
+                        className="block h-full rounded-full bg-green-500"
                         style={{ width: `${(s.talents / maxTalents) * 100}%` }}
                       />
                     </div>

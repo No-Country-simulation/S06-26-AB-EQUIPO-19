@@ -197,7 +197,7 @@ export function CreateVagaDialog() {
                       variant={active ? "default" : "secondary"}
                       className={cn(
                         "cursor-pointer gap-1 transition-colors",
-                        active && "bg-primary text-primary-foreground",
+                        active && "bg-violet-400 text-primary-foreground"
                       )}
                     >
                       <Leaf className="size-2.5" /> {c}

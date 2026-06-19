@@ -2,7 +2,6 @@
 
 import { Globe, Search } from "lucide-react"
 import { Input } from "@/components/ui/input"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { LiveBadge } from "@/components/live-badge"
 import { useApiStatus } from "@/lib/api/hooks"
 import { cn } from "@/lib/utils"
@@ -36,7 +35,7 @@ export function PlatformHeader({ view, onViewChange }: Props) {
               className={cn(
                 "rounded-md px-3 py-1.5 text-sm font-medium capitalize transition-colors",
                 view === mode
-                  ? "bg-primary text-primary-foreground"
+                  ? "bg-green-500 text-primary-foreground"
                   : "text-muted-foreground hover:text-foreground",
               )}
             >
