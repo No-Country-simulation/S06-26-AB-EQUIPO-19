@@ -347,7 +347,7 @@ S06-26-AB-EQUIPO-19/
 | Matheus Bauer | Architect (Software / Solution Architect) | [@obauercosta](https://github.com/obauercosta) |
 | Carlos André Alves Bezerra | Backend Developer | [@andrealves8](https://github.com/andrealves8) |
 | Geordani Machado | Frontend Developer | [@Geordani-Machado](https://github.com/Geordani-Machado) |
-| Fernando Henrique Pereira Fernandez | Data Analyst | [@fernandez2312](https://github.com/fernandez2312)— |
+| Fernando Henrique Pereira Fernandez | Data Analyst | [@fernandez2312](https://github.com/fernandez2312) |
 | Wesley Muniz França | Graphic Designer | — |
 | Erick Levi Souza Machado | Game Developer | — |
 
