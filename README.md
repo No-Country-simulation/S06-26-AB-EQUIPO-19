@@ -38,7 +38,7 @@ Plataforma B2B que conecta empresas com metas ESG a talentos de grupos sub-repre
 | Banco de Dados | MySQL + SQLAlchemy | ✅ Implementado |
 | Motor de IA | Google Gemini (AI Studio) | ✅ Implementado |
 | Dados Geográficos | Vísent CDRView (dataset real) | ✅ Implementado |
-| Front-end | React.js | 🔄 Em desenvolvimento |
+| Front-end | React.js | ✅ Implementado |
 | Deploy | Render | ⏳ Pendente |
 
 ---
