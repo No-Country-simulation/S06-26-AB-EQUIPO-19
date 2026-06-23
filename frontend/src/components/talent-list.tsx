@@ -12,16 +12,11 @@ type Props = {
   selectedState: string | null
 }
 
-// 1. Movemos a configuração para fora do componente para manter a referência estável.
-// Dessa forma, re-renders não farão o hook disparar um novo fetch desnecessário.
 const MATCH_CONFIG = { limite: 12 }
 
 export function TalentList({ selectedState }: Props) {
-  // 2. Usamos a constante externa aqui
   const { candidates, total, isLive, isLoading } = useMatch(MATCH_CONFIG)
 
-  // No modo demonstração filtramos por UF do estado selecionado no mapa.
-  // Com dados reais (uma única região), exibimos todos os candidatos do match.
   const selectedUf = selectedState
     ? stateData.find((s) => s.name === selectedState)?.uf
     : undefined
@@ -92,7 +87,13 @@ export function TalentList({ selectedState }: Props) {
                   <ShieldCheck className="size-3" />
                   Sem viés
                 </div>
-                <ScoreRing value={c.inclusionScore} label="inclusão" />
+                <div className="hidden h-14 w-px bg-border sm:block" aria-hidden="true" />
+                <div className="hidden flex-col items-center gap-1 sm:flex">
+                  <span className="text-[9px] font-semibold uppercase tracking-widest text-muted-foreground">
+                    Score
+                  </span>
+                  <ScoreRing value={c.inclusionScore} label="inclusão" />
+                </div>
               </div>
             </li>
           ))}
