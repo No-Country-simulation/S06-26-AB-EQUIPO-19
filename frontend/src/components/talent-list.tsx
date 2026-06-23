@@ -12,8 +12,13 @@ type Props = {
   selectedState: string | null
 }
 
+// 1. Movemos a configuração para fora do componente para manter a referência estável.
+// Dessa forma, re-renders não farão o hook disparar um novo fetch desnecessário.
+const MATCH_CONFIG = { limite: 12 }
+
 export function TalentList({ selectedState }: Props) {
-  const { candidates, total, isLive, isLoading } = useMatch({ limite: 12 })
+  // 2. Usamos a constante externa aqui
+  const { candidates, total, isLive, isLoading } = useMatch(MATCH_CONFIG)
 
   // No modo demonstração filtramos por UF do estado selecionado no mapa.
   // Com dados reais (uma única região), exibimos todos os candidatos do match.
