@@ -1,11 +1,12 @@
 "use client"
 
-import { MapPin, X, Signal } from "lucide-react"
+import { MapPin, X, Signal, ChevronDown, ChevronUp } from "lucide-react"
 import { Card } from "@/components/ui/card"
 import { BrazilMap } from "@/components/brazil-map"
 import { LiveBadge } from "@/components/live-badge"
 import { useInsights } from "@/lib/api/hooks"
 import { cn } from "@/lib/utils"
+import { useState } from "react"
 
 const LEGEND = [
   { label: "Alta", color: "oklch(0.82 0.14 175)" },
@@ -15,6 +16,8 @@ const LEGEND = [
   { label: "Baixa", color: "oklch(0.30 0.03 205)" },
 ]
 
+const PAGE_SIZE = 15
+
 type Props = {
   selectedState: string | null
   onSelectState: (s: string | null) => void
@@ -22,9 +25,8 @@ type Props = {
 
 export function TalentMapPanel({ selectedState, onSelectState }: Props) {
   const { stateData, regions, isLive } = useInsights()
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
 
-  // Quando há dados reais (por região) usamos o ranking de regiões da API;
-  // caso contrário, caímos para o ranking nacional simulado por estado.
   const rankingRegions = regions
     ? [...regions].sort((a, b) => b.perfis - a.perfis)
     : null
@@ -33,6 +35,10 @@ export function TalentMapPanel({ selectedState, onSelectState }: Props) {
     ? Math.max(1, ...rankingRegions.map((r) => r.perfis))
     : 1
   const maxTalents = Math.max(1, ...rankingStates.map((s) => s.talents))
+
+  const totalItems = rankingRegions ? rankingRegions.length : rankingStates.length
+  const hasMore = visibleCount < totalItems
+  const canCollapse = visibleCount > PAGE_SIZE
 
   return (
     <Card className="overflow-hidden p-0">
@@ -81,13 +87,18 @@ export function TalentMapPanel({ selectedState, onSelectState }: Props) {
         </div>
 
         <div className="flex flex-col gap-1">
-          <span className="mb-1 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            {rankingRegions ? "Ranking por região" : "Ranking regional"}
-          </span>
+          <div className="mb-1 flex items-center justify-between">
+            <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              {rankingRegions ? "Ranking por região" : "Ranking regional"}
+            </span>
+            <span className="text-xs text-muted-foreground">
+              {Math.min(visibleCount, totalItems)} de {totalItems}
+            </span>
+          </div>
 
           {rankingRegions ? (
             <div className="flex flex-col gap-0.5">
-              {rankingRegions.map((r, i) => {
+              {rankingRegions.slice(0, visibleCount).map((r, i) => {
                 const active = selectedState === r.state
                 return (
                   <button
@@ -123,7 +134,7 @@ export function TalentMapPanel({ selectedState, onSelectState }: Props) {
             </div>
           ) : (
             <div className="flex flex-col gap-0.5">
-              {rankingStates.slice(0, 9).map((s, i) => {
+              {rankingStates.slice(0, visibleCount).map((s, i) => {
                 const active = selectedState === s.name
                 return (
                   <button
@@ -152,6 +163,27 @@ export function TalentMapPanel({ selectedState, onSelectState }: Props) {
               })}
             </div>
           )}
+
+          <div className="mt-2 flex gap-2">
+            {hasMore && (
+              <button
+                onClick={() => setVisibleCount((v) => v + PAGE_SIZE)}
+                className="flex flex-1 items-center justify-center gap-1 rounded-md border border-border py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted"
+              >
+                <ChevronDown className="size-3" />
+                Ver mais 15
+              </button>
+            )}
+            {canCollapse && (
+              <button
+                onClick={() => setVisibleCount(PAGE_SIZE)}
+                className="flex flex-1 items-center justify-center gap-1 rounded-md border border-border py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted"
+              >
+                <ChevronUp className="size-3" />
+                Ver menos
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </Card>
