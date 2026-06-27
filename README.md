@@ -2,31 +2,41 @@
 
 Repositório oficial da **Equipe 19** — Hackathon No Country S06-26.
 
-Plataforma B2B que conecta empresas com metas ESG a talentos de grupos sub-representados. Um motor de IA calcula o score de compatibilidade técnica com filtro anti-viés, e dados reais de geolocalização mostram onde esses talentos estão concentrados por região.
-
-> ⚠️ **Observação:** Este repositório contém o Backend (API). O Frontend está em desenvolvimento.
+O **App BiT** é uma plataforma corporativa B2B projetada para conectar empresas com metas de governança ambiental e social (ESG) a talentos de grupos sub-representados. A solução utiliza um motor de Inteligência Artificial para avaliar competências técnicas através de um filtro anti-viés, cruzando os resultados com dados reais de geolocalização e densidade demográfica.
 
 ---
 
 ## Índice
 
-- [Funcionalidades](#funcionalidades)
+- [Sobre o Projeto](#sobre-o-projeto)
+- [Principais Funcionalidades](#principais-funcionalidades)
 - [Stack Tecnológica](#stack-tecnológica)
-- [Banco de Dados](#banco-de-dados)
+- [Estrutura do Banco de Dados](#estrutura-do-banco-de-dados)
 - [Como Rodar Localmente](#como-rodar-localmente)
 - [Endpoints da API](#endpoints-da-api)
 - [Resumo de Validação](#resumo-de-validação)
+- [Estrutura de Pastas](#estrutura-de-pastas)
+- [Guia de Contribuição](#guia-de-contribuição)
 - [Equipe](#equipe)
 
 ---
 
-## Funcionalidades
+## Sobre o Projeto
 
-- **Health Check** — Verificação de status e disponibilidade da API
-- **Vagas** — Cadastro, listagem e gerenciamento de oportunidades com critérios ESG
-- **Matching** — Busca inteligente de candidatos ranqueada por Índice de Inclusão
-- **Insights** — Dados de geolocalização, concentração e fluxo de talentos
-- **Dashboard B2C** — Métricas de diversidade, perfil demográfico e qualificação da base
+O processo de recrutamento técnico frequentemente esbarra em vieses inconscientes. O App BiT resolve esse problema ocultando informações demográficas (nome, gênero, raça) durante a triagem inicial e delegando a avaliação técnica para um modelo de Inteligência Artificial (Google Gemini). 
+
+As empresas definem suas metas ESG, e a plataforma destaca candidatos que atendem a esses critérios geográficos e sociais de forma paralela à nota técnica, garantindo um processo seletivo justo, rastreável e altamente inclusivo.
+
+---
+
+## Principais Funcionalidades
+
+- **Health Check:** Verificação de status e disponibilidade da API.
+- **Triagem Anti-Viés com IA:** Avaliação de currículos executada pelo Google Gemini, baseada estritamente em habilidades técnicas, gerando um Score de Inclusão e um parecer justificado para o recrutador.
+- **Insights de Geolocalização:** Integração com o dataset Vísent CDRView, permitindo visualizar a densidade real de talentos mapeados, concentração, fluxo e a cobertura de rede (4G/5G) por região.
+- **Gestão de Vagas:** Interface B2B para cadastro, listagem e gerenciamento de oportunidades de emprego com definição clara de critérios ESG e de ação afirmativa.
+- **Candidatura e Mensageria Integrada:** Fluxo completo onde o talento se candidata e a empresa inicia a comunicação diretamente pela plataforma, gerando o rastreio automático do status da negociação para fins de comissionamento.
+- **Dashboard B2C:** Painel interativo com métricas globais conectadas ao vivo ao banco de talentos, mostrando a distribuição por perfil, renda, idade e qualificação da base.
 
 ---
 
@@ -36,31 +46,33 @@ Plataforma B2B que conecta empresas com metas ESG a talentos de grupos sub-repre
 |--------|-----------|--------|
 | Back-end | Python / FastAPI | ✅ Implementado |
 | Banco de Dados | MySQL + SQLAlchemy | ✅ Implementado |
-| Motor de IA | Google Gemini (AI Studio) | ✅ Implementado |
+| Motor de IA | Google Gemini (SDK google-genai) | ✅ Implementado |
 | Dados Geográficos | Vísent CDRView (dataset real) | ✅ Implementado |
 | Front-end | React.js | ✅ Implementado |
 | Deploy | Render | ⏳ Pendente |
 
 ---
 
-## Banco de Dados
+## Estrutura do Banco de Dados
+
+O sistema opera com um banco de dados relacional (MySQL). O núcleo do modelo de dados é composto por:
 
 - Banco utilizado: **MySQL**
-- Tabelas principais: `assinantes`, `antenas`, `concentracao`, `vagas`, `empresas`
+- Tabelas principais: `assinantes`, `antenas`, `concentracao`, `vagas`, `empresas`, `Mensagem_Recrutamento`, `Contratacao_Comissao`
 - Campos chave para matching: `home_municipio`, `income_cluster`, `age_group`, `mobility_pattern`, `flag_flagship`
 - Scripts SQL:
   - `backend/database/schema.sql` — cria as tabelas e índices
-  - `backend/database/insert.sql` — insere dados de exemplo
+  - `backend/database/insert.sql` e `seed.sql` — inserem dados de exemplo e alimentam as bases de teste.
 
 ---
 
 ## Como Rodar Localmente
 
 ### Pré-requisitos
-
-- Python 3.12+
-- MySQL rodando localmente
-- Chave de API do [Google AI Studio](https://aistudio.google.com) (gratuito)
+- Node.js e npm (Para a interface web)
+- Python 3.11+ (Para o servidor da API)
+- MySQL Server rodando localmente (Ex: XAMPP, WAMP, MySQL Workbench)
+- Chave de API do [Google AI Studio](https://aistudio.google.com/)
 
 ### Passo a passo
 
@@ -69,31 +81,37 @@ Plataforma B2B que conecta empresas com metas ESG a talentos de grupos sub-repre
 git clone https://github.com/No-Country-simulation/S06-26-AB-EQUIPO-19.git
 cd S06-26-AB-EQUIPO-19
 
-# 2. Crie e ative o ambiente virtual
+# 2. Crie e ative o ambiente virtual para o backend
+cd backend
 python3 -m venv venv
 source venv/bin/activate        # Linux/macOS
 venv\Scripts\activate           # Windows
 
 # 3. Instale as dependências
-pip install -r backend/requirements.txt
+pip install -r requirements.txt
 
 # 4. Configure as variáveis de ambiente
-cp backend/.env.example backend/.env
-# Edite o backend/.env com suas credenciais do banco e a IA_API_KEY
+cp .env.example .env
+# Edite o .env com suas credenciais locais de acesso ao banco MySQL e a chave IA_API_KEY
 
-# 5. Crie o banco de dados
-mysql -u root -p < backend/database/schema.sql
-mysql -u root -p < backend/database/insert.sql
+# 5. Crie o banco de dados e as tabelas
+mysql -u root -p < database/schema.sql
+mysql -u root -p < database/insert.sql
+mysql -u root -p < database/seed.sql
 
-# 6. Carregue os dados da Vísent no banco
-cd backend
+# 6. Carregue os dados estruturais da Vísent no banco
 python carregar_dados.py
 
-# 7. Inicie o servidor
-python3 -m uvicorn backend.main:app --reload --host 0.0.0.0 --port 8080
+# 7. Inicie o servidor da API
+python3 -m uvicorn main:app --reload --host 0.0.0.0 --port 8080
+
+# 8. Inicie a interface do usuário em outro terminal
+cd ../frontend
+npm install
+npm run dev
 ```
 
-Acesse `http://localhost:8080/docs` para explorar todos os endpoints via Swagger.
+Acesse `http://localhost:8080/docs` para explorar e testar todos os endpoints via Swagger. O painel web estará disponível localmente em `http://localhost:5173`.
 
 ---
 
@@ -112,9 +130,8 @@ Health check — verifica se a API está no ar.
 **Response `200 OK`:**
 ```json
 {
-  "status": "online",
-  "versao": "0.1.0",
-  "nome": "App BiT — Motor de Matching Inclusivo"
+  "status": "ok",
+  "message": "App BiT API está no ar."
 }
 ```
 
@@ -122,7 +139,7 @@ Health check — verifica se a API está no ar.
 
 ### GET /vagas
 
-Lista todas as vagas publicadas.
+Lista todas as vagas publicadas na base de dados.
 
 **Response `200 OK`:**
 ```json
@@ -154,11 +171,12 @@ Lista todas as vagas publicadas.
 
 ### POST /vagas
 
-Publica uma nova vaga no sistema.
+Publica uma nova oportunidade de emprego no sistema.
 
 **Request Body:**
 ```json
 {
+  "empresa_id": 1,
   "cargo": "Engenheiro de Dados",
   "descricao": "Trabalhar com dados de mobilidade e inclusão",
   "requisito_perfil": "Superior Completo",
@@ -184,41 +202,88 @@ Publica uma nova vaga no sistema.
 
 ---
 
-### POST /match
+### POST /vagas/candidatar
 
-Busca candidatos com filtros anti-viés e critérios ESG, ranqueados por Índice de Inclusão.
-
-> ⚠️ **Segurança:** o endpoint não retorna `nome`, `email`, `genero`, `raca` ou qualquer atributo pessoal identificável.
-
-**Campos disponíveis:** `municipio`, `regiao`, `renda` (A, B ou C), `faixa_etaria`, `mobilidade`, `grupo_sub_representado`, `limite`
+Permite que um candidato manifeste interesse em uma vaga publicada.
 
 **Request Body:**
 ```json
 {
-  "faixa_etaria": "55+",
-  "grupo_sub_representado": true,
-  "limite": 5
+  "vaga_id": 1,
+  "candidato_id": 1
+}
+```
+
+**Response `201 Created`:**
+```json
+{
+  "sucesso": true,
+  "mensagem": "Candidatura enviada com sucesso! A empresa já pode ver o seu perfil no painel de Triagem."
+}
+```
+
+---
+
+### POST /mensagens
+
+Registra o envio da primeira mensagem entre a empresa e o talento, ativando simultaneamente o registro de comissionamento de contratação atrelado à plataforma.
+
+**Request Body:**
+```json
+{
+  "empresa_id": 1,
+  "candidato_id": 1,
+  "vaga_id": 1,
+  "conteudo": "Olá, Aline! Gostamos do seu perfil técnico aprovado pelo motor de IA."
 }
 ```
 
 **Response `200 OK`:**
 ```json
 {
-  "total_encontrados": 7590,
+  "sucesso": true,
+  "mensagem": "Mensagem enviada e processo de contratação iniciado com rastreio de comissão.",
+  "id_registro": 12
+}
+```
+
+---
+
+### POST /match
+
+Busca candidatos limitados aos filtros estipulados e os submete à Inteligência Artificial (Google Gemini) para análise de compatibilidade técnica sem viés humano, ranqueando a lista de retorno pelo Score de Inclusão.
+
+> ⚠️ **Segurança:** A identidade, nome e gênero dos candidatos são completamente anonimizados no envio do payload ao motor de Inteligência Artificial para garantir imparcialidade estrutural.
+
+**Campos disponíveis no Request:** `municipio`, `regiao`, `renda`, `faixa_etaria`, `mobilidade`, `grupo_sub_representado`, `limite`
+
+**Request Body:**
+```json
+{
+  "faixa_etaria": "55+",
+  "grupo_sub_representado": true,
+  "limite": 4
+}
+```
+
+**Response `200 OK`:**
+```json
+{
+  "total_encontrados": 2,
   "candidatos": [
     {
-      "id": 81,
-      "perfil": "Perfil Renda C",
-      "detalhes": "Renda: C | Idade: 55+ | Mobilidade: INTENSA",
-      "localizacao": "São José - Região: SAO_JOSE_BARREIROS",
-      "indice_inclusao": 1.0
+      "id": 1,
+      "perfil": "Candidato #1 (Anonimizado)",
+      "detalhes": "Skills: Python, React, PostgreSQL | Parecer IA: A análise técnica indicou adequação integral do candidato à vaga proposta.",
+      "localizacao": "Região detectada: Norte ou Nordeste",
+      "indice_inclusao": 0.85
     },
     {
-      "id": 331,
-      "perfil": "Perfil Renda B",
-      "detalhes": "Renda: B | Idade: 55+ | Mobilidade: INTENSA",
-      "localizacao": "Palhoça - Região: PALHOCA_CENTRO",
-      "indice_inclusao": 1.0
+      "id": 2,
+      "perfil": "Candidato #2 (Anonimizado)",
+      "detalhes": "Skills: Python, Flask | Parecer IA: O candidato não demonstrou conhecimentos em PostgreSQL e Docker.",
+      "localizacao": "Região detectada: Sul, Sudeste ou Centro-Oeste",
+      "indice_inclusao": 0.45
     }
   ]
 }
@@ -228,21 +293,21 @@ Busca candidatos com filtros anti-viés e critérios ESG, ranqueados por Índice
 
 ### GET /insights
 
-Retorna dados reais de concentração de pessoas por região.
-Fonte: Vísent CDRView — dados de antenas Anatel de Florianópolis.
+Retorna dados brutos reais de concentração populacional cruzados pelo backend, traduzindo as capturas geográficas das antenas para alimentar o mapa interativo.
+Fonte primária: Vísent CDRView — dados de antenas Anatel da região metropolitana de Florianópolis.
 
 **Response `200 OK`:**
 ```json
 {
   "mapa_talentos": [
     {
-      "regiao": "Florianópolis",
+      "regiao": "Florianópolis - Centro_Historico",
       "concentracao": 0.94,
       "cobertura_rede": "5G",
       "perfis_disponiveis": 89200
     },
     {
-      "regiao": "Palhoça",
+      "regiao": "Palhoça - Sao_Jose_Barreiros",
       "concentracao": 0.79,
       "cobertura_rede": "4G/5G",
       "perfis_disponiveis": 38500
@@ -255,7 +320,7 @@ Fonte: Vísent CDRView — dados de antenas Anatel de Florianópolis.
 
 ### GET /dashboard/saude-time
 
-Retorna métricas de distribuição de perfis por renda, idade e região.
+Consome a tabela de dados dos usuários logados e processa métricas ativas de distribuição de perfis por renda, idade e regiões para exibição no Dashboard.
 
 **Response `200 OK`:**
 ```json
@@ -281,7 +346,7 @@ Retorna métricas de distribuição de perfis por renda, idade e região.
       "indice_densidade": 0.94
     }
   ],
-  "data_atualizacao": "2026-06-16"
+  "data_atualizacao": "2026-06-23"
 }
 ```
 
@@ -289,20 +354,24 @@ Retorna métricas de distribuição de perfis por renda, idade e região.
 
 ## Resumo de Validação
 
-Todos os endpoints foram testados com sucesso via Swagger.
+Todos os endpoints foram testados e homologados localmente com sucesso.
 
-| Funcionalidade | Método | Rota | Status |
+| Funcionalidade | Método | Rota | Status HTTP |
 |---------------|---------|-------|--------|
 | Saúde da API | GET | `/` | ✅ 200 |
 | Listar Vagas | GET | `/vagas/` | ✅ 200 |
 | Publicar Vaga | POST | `/vagas/` | ✅ 201 |
-| Matching Inclusivo | POST | `/match/` | ✅ 200 |
+| Registrar Candidatura | POST | `/vagas/candidatar` | ✅ 201 |
+| Enviar Mensagem (Comissão) | POST | `/mensagens/` | ✅ 200 |
+| Triagem IA Inclusiva | POST | `/match/` | ✅ 200 |
 | Insights Geográficos | GET | `/insights/` | ✅ 200 |
-| Dashboard ESG | GET | `/dashboard/saude-time` | ✅ 200 |
+| Dashboard ESG e Métricas | GET | `/dashboard/saude-time` | ✅ 200 |
 
 ---
 
 ## Estrutura de Pastas
+
+A organização de módulos atualizada se apresenta da seguinte forma no backend:
 
 ```
 S06-26-AB-EQUIPO-19/
@@ -311,18 +380,20 @@ S06-26-AB-EQUIPO-19/
 │   │   └── database.py
 │   ├── database/
 │   │   ├── schema.sql
-│   │   └── insert.sql
+│   │   ├── insert.sql
+│   │   └── seed.sql
 │   ├── models/
 │   │   ├── models_db.py
 │   │   └── schemas.py
 │   ├── routes/
-│   │   ├── match.py
-│   │   ├── vagas.py
+│   │   ├── dashboard.py
 │   │   ├── insights.py
-│   │   └── dashboard.py
+│   │   ├── match.py
+│   │   ├── mensagens.py
+│   │   └── vagas.py
 │   ├── services/
-│   │   ├── ia_service.py
-│   │   └── geo_service.py
+│   │   ├── geo_service.py
+│   │   └── ia_service.py
 │   ├── carregar_dados.py
 │   ├── main.py
 │   ├── Dockerfile
@@ -330,6 +401,11 @@ S06-26-AB-EQUIPO-19/
 ├── dataset-visent/
 │   └── tensores/
 │       └── tensor_concentracao.csv
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   └── lib/
 ├── SYSTEM_PROMPT_APP_BIT.md
 ├── CONTRIBUTING.md
 ├── docker-compose.yml
@@ -337,6 +413,14 @@ S06-26-AB-EQUIPO-19/
 ├── .gitignore
 └── README.md
 ```
+
+---
+
+## Guia de Contribuição
+
+O fluxo de desenvolvimento da Equipe 19 segue estritamente o modelo de branches baseado em features/fixes. **Sob nenhuma circunstância realize commits diretos na branch `main`.**
+
+Para compreender o padrão de mensagens de commits, as diretrizes de código e como submeter Pull Requests de forma segura para revisão da arquitetura, consulte o nosso [Guia de Contribuição (CONTRIBUTING.md)](CONTRIBUTING.md).
 
 ---
 
