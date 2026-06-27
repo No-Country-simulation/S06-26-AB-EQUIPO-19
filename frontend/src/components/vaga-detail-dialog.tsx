@@ -1,6 +1,7 @@
 "use client"
 
-import { Briefcase, MapPin, Wallet, GraduationCap, Leaf, ShieldCheck } from "lucide-react"
+import { useState } from "react"
+import { Briefcase, MapPin, Wallet, GraduationCap, Leaf, ShieldCheck, Loader2 } from "lucide-react"
 import {
   Dialog,
   DialogContent,
@@ -13,6 +14,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import type { JobItem } from "@/lib/api/adapters"
+import { aplicarVaga } from "@/lib/api/hooks"
 
 type Props = {
   job: JobItem | null
@@ -41,7 +43,24 @@ function Row({
 }
 
 export function VagaDetailDialog({ job, open, onOpenChange }: Props) {
+  const [aplicando, setAplicando] = useState(false)
+
   if (!job) return null
+
+  // Função disparada quando a Aline (ID 1) clica no botão
+  const handleCandidatar = async () => {
+    setAplicando(true)
+    try {
+      // Como é a visão da Aline, forçamos o candidato_id dela como 1 para a demonstração
+      const resposta = await aplicarVaga({ vaga_id: job.id, candidato_id: 1 })
+      alert(resposta.mensagem)
+      onOpenChange(false)
+    } catch (error) {
+      alert("Erro ao se candidatar. Verifique a conexão com o servidor.")
+    } finally {
+      setAplicando(false)
+    }
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -95,7 +114,7 @@ export function VagaDetailDialog({ job, open, onOpenChange }: Props) {
             </>
           )}
 
-          <div className="flex items-start gap-2 rounded-md bg-green-500/50 p-3">
+          <div className="flex items-start gap-2 rounded-md bg-green-500/10 p-3">
             <ShieldCheck className="size-4 shrink-0 text-primary" />
             <p className="text-xs leading-relaxed text-muted-foreground">
               A triagem técnica desta vaga é cega: nome, gênero e foto ficam ocultos até o match.
@@ -104,10 +123,15 @@ export function VagaDetailDialog({ job, open, onOpenChange }: Props) {
         </div>
 
         <DialogFooter>
-          <Button variant="ghost" onClick={() => onOpenChange(false)}>
+          <Button variant="ghost" onClick={() => onOpenChange(false)} disabled={aplicando}>
             Fechar
           </Button>
-          <Button>Candidatar-se</Button>
+          
+          {/* Botão de Candidatura que chama a função nova */}
+          <Button onClick={handleCandidatar} disabled={aplicando} className="gap-2">
+            {aplicando && <Loader2 className="size-4 animate-spin" />}
+            {aplicando ? "Enviando perfil..." : "Candidatar-se"}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
