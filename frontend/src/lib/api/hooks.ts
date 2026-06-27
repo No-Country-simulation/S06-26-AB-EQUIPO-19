@@ -1,15 +1,6 @@
-/**
- * hooks.ts — Camada de acesso à API do App BiT
- *
- * Tenta conectar ao backend em localhost:8080.
- * Se a API estiver offline, cai automaticamente para dados mock.
- */
-
 import { useState, useEffect, useCallback } from "react"
 
 const BASE_URL = "http://localhost:8080"
-
-// ── tipos ────────────────────────────────────────────────────────────────────
 
 export interface Candidate {
   id: number
@@ -43,8 +34,6 @@ export interface Distribution {
   value: number
 }
 
-// ── dados mock (fallback quando API está offline) ─────────────────────────────
-
 const MOCK_CANDIDATES: Candidate[] = [
   { id: 1, perfil: "Perfil Renda B", detalhes: "Renda: B | Idade: 25-34 | Mobilidade: INTENSA", municipio: "São Paulo", regiao: "SP", inclusionScore: 90 },
   { id: 2, perfil: "Perfil Renda C", detalhes: "Renda: C | Idade: 55+ | Mobilidade: INTENSA", municipio: "Salvador", regiao: "BA", inclusionScore: 85 },
@@ -52,23 +41,12 @@ const MOCK_CANDIDATES: Candidate[] = [
   { id: 4, perfil: "Perfil Renda B", detalhes: "Renda: B | Idade: 25-34 | Mobilidade: BAIXA", municipio: "Fortaleza", regiao: "CE", inclusionScore: 72 },
   { id: 5, perfil: "Perfil Renda C", detalhes: "Renda: C | Idade: 18-24 | Mobilidade: INTENSA", municipio: "Manaus", regiao: "AM", inclusionScore: 68 },
   { id: 6, perfil: "Perfil Renda B", detalhes: "Renda: B | Idade: 25-34 | Mobilidade: INTENSA", municipio: "Porto Alegre", regiao: "RS", inclusionScore: 65 },
-  { id: 7, perfil: "Perfil Renda A", detalhes: "Renda: A | Idade: 18-24 | Mobilidade: MODERADA", municipio: "Curitiba", regiao: "PR", inclusionScore: 61 },
-  { id: 8, perfil: "Perfil Renda C", detalhes: "Renda: C | Idade: 35-44 | Mobilidade: BAIXA", municipio: "Belém", regiao: "PA", inclusionScore: 58 },
-  { id: 9, perfil: "Perfil Renda B", detalhes: "Renda: B | Idade: 55+ | Mobilidade: INTENSA", municipio: "Goiânia", regiao: "GO", inclusionScore: 55 },
-  { id: 10, perfil: "Perfil Renda A", detalhes: "Renda: A | Idade: 25-34 | Mobilidade: MODERADA", municipio: "Belo Horizonte", regiao: "MG", inclusionScore: 52 },
 ]
 
 const MOCK_REGIONS: Region[] = [
   { regiao: "São Paulo - Centro", state: "São Paulo", concentracao: 0.98, coberturaRede: "5G", perfis: 198400 },
   { regiao: "Rio de Janeiro - Centro", state: "Rio de Janeiro", concentracao: 0.94, coberturaRede: "5G", perfis: 89200 },
   { regiao: "Minas Gerais - BH", state: "Minas Gerais", concentracao: 0.85, coberturaRede: "4G/5G", perfis: 68400 },
-  { regiao: "Bahia - Salvador", state: "Bahia", concentracao: 0.79, coberturaRede: "4G/5G", perfis: 42100 },
-  { regiao: "Pernambuco - Recife", state: "Pernambuco", concentracao: 0.72, coberturaRede: "4G", perfis: 31400 },
-  { regiao: "Ceará - Fortaleza", state: "Ceará", concentracao: 0.68, coberturaRede: "4G", perfis: 28900 },
-  { regiao: "Paraná - Curitiba", state: "Paraná", concentracao: 0.65, coberturaRede: "4G/5G", perfis: 38700 },
-  { regiao: "Rio Grande do Sul - Porto Alegre", state: "Rio Grande do Sul", concentracao: 0.61, coberturaRede: "4G", perfis: 44300 },
-  { regiao: "Amazonas - Manaus", state: "Amazonas", concentracao: 0.55, coberturaRede: "4G", perfis: 12300 },
-  { regiao: "Pará - Belém", state: "Pará", concentracao: 0.51, coberturaRede: "3G/4G", perfis: 22100 },
 ]
 
 const MOCK_JOBS: JobItem[] = [
@@ -85,10 +63,9 @@ const MOCK_DISTRIBUTION: Distribution[] = [
   { label: "Povos indígenas", value: 3 },
 ]
 
-// ── mapeamento de município para estado ───────────────────────────────────────
-
 const MUNICIPIO_PARA_ESTADO: Record<string, string> = {
   "Florianópolis": "Santa Catarina",
+  "Florianopolis": "Santa Catarina",
   "São José": "Santa Catarina",
   "Sao Jose": "Santa Catarina",
   "Palhoça": "Santa Catarina",
@@ -122,33 +99,29 @@ const MUNICIPIO_PARA_ESTADO: Record<string, string> = {
   "Vitória": "Espírito Santo",
 }
 
-// ── helper de fetch ───────────────────────────────────────────────────────────
+const ESTADO_PARA_UF: Record<string, string> = {
+  "Santa Catarina": "SC", "São Paulo": "SP", "Rio de Janeiro": "RJ", "Minas Gerais": "MG",
+  "Bahia": "BA", "Ceará": "CE", "Pernambuco": "PE", "Amazonas": "AM", "Paraná": "PR",
+  "Rio Grande do Sul": "RS", "Pará": "PA", "Goiás": "GO", "Distrito Federal": "DF"
+}
 
 async function apiFetch<T>(path: string, opts?: RequestInit): Promise<T> {
   const res = await fetch(`${BASE_URL}${path}`, {
     ...opts,
     headers: { "Content-Type": "application/json", ...opts?.headers },
-    signal: AbortSignal.timeout(4000),
+    signal: AbortSignal.timeout(60000),
   })
   if (!res.ok) throw new Error(`HTTP ${res.status}`)
   return res.json()
 }
 
-// ── useApiStatus ──────────────────────────────────────────────────────────────
-
 export function useApiStatus() {
   const [online, setOnline] = useState(false)
-
   useEffect(() => {
-    apiFetch("/")
-      .then(() => setOnline(true))
-      .catch(() => setOnline(false))
+    apiFetch("/").then(() => setOnline(true)).catch(() => setOnline(false))
   }, [])
-
   return { online }
 }
-
-// ── useMatch ──────────────────────────────────────────────────────────────────
 
 export function useMatch(params: { limite?: number } = {}) {
   const [candidates, setCandidates] = useState<Candidate[]>([])
@@ -157,9 +130,11 @@ export function useMatch(params: { limite?: number } = {}) {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
+    const limiteSeguro = 4;
+
     apiFetch<{ total_encontrados: number; candidatos: any[] }>("/match/", {
       method: "POST",
-      body: JSON.stringify({ grupo_sub_representado: true, limite: params.limite ?? 12 }),
+      body: JSON.stringify({ grupo_sub_representado: true, limite: limiteSeguro }),
     })
       .then((data) => {
         setCandidates(
@@ -175,7 +150,8 @@ export function useMatch(params: { limite?: number } = {}) {
         setTotal(data.total_encontrados)
         setIsLive(true)
       })
-      .catch(() => {
+      .catch((err) => {
+        console.error("ERRO NO MATCH:", err)
         setCandidates(MOCK_CANDIDATES)
         setTotal(MOCK_CANDIDATES.length)
         setIsLive(false)
@@ -186,18 +162,10 @@ export function useMatch(params: { limite?: number } = {}) {
   return { candidates, total, isLive, isLoading }
 }
 
-// ── useInsights ───────────────────────────────────────────────────────────────
-
-// undefined = ainda carregando
-// null = API offline, usar mock
-// Region[] = dados reais da API
-
 export function useInsights() {
   const [regions, setRegions] = useState<Region[] | null | undefined>(undefined)
   const [isLive, setIsLive] = useState(false)
 
-  // Só usa MOCK_REGIONS quando temos certeza que a API está offline (null)
-  // Quando undefined (carregando), retorna array vazio para não misturar
   const activeRegions = regions === undefined
     ? []
     : regions === null
@@ -209,8 +177,9 @@ export function useInsights() {
     if (existing) {
       existing.talents += r.perfis
     } else {
+      const ufCorreta = ESTADO_PARA_UF[r.state] ?? r.state?.slice(0, 2).toUpperCase() ?? "SC"
       acc.push({
-        uf: r.state?.slice(0, 2).toUpperCase() ?? "SC",
+        uf: ufCorreta,
         name: r.state ?? r.regiao,
         talents: r.perfis,
         matchRate: Math.round(r.concentracao * 100),
@@ -243,12 +212,8 @@ export function useInsights() {
       })
   }, [])
 
-  // Expõe regions como null quando offline ou array quando online
-  // O componente usa regions !== null para saber se está no modo real
   return { regions: regions === undefined ? null : regions, stateData, isLive }
 }
-
-// ── useDashboard ──────────────────────────────────────────────────────────────
 
 export function useDashboard() {
   const [totalSubscribers, setTotalSubscribers] = useState(0)
@@ -269,8 +234,6 @@ export function useDashboard() {
 
   return { totalSubscribers, distribution, isLive }
 }
-
-// ── useVagas ──────────────────────────────────────────────────────────────────
 
 export function useVagas() {
   const [jobs, setJobs] = useState<JobItem[]>([])
@@ -305,15 +268,21 @@ export function useVagas() {
   return { jobs, isLive, isLoading, reload: load }
 }
 
-// ── publishVaga ───────────────────────────────────────────────────────────────
-
-export async function publishVaga(payload: {
-  cargo: string
-  descricao: string
-  requisito_perfil: string
-  faixa_salarial: string
-  localizacao: string
-  criterios_esg: string[]
-}) {
+export async function publishVaga(payload: any) {
   return apiFetch("/vagas/", { method: "POST", body: JSON.stringify(payload) })
+}
+
+export async function enviarMensagem(payload: { empresa_id: number; candidato_id: number; vaga_id: number; conteudo: string }) {
+  return apiFetch<{ sucesso: boolean; mensagem: string; id_registro: number }>("/mensagens/", {
+    method: "POST",
+    body: JSON.stringify(payload)
+  })
+}
+
+// NOVA FUNÇÃO: Liga o botão "Candidatar-se" da Aline Ferreira ao banco de dados
+export async function aplicarVaga(payload: { vaga_id: number; candidato_id: number }) {
+  return apiFetch<{ sucesso: boolean; mensagem: string }>("/vagas/candidatar", {
+    method: "POST",
+    body: JSON.stringify(payload)
+  })
 }
