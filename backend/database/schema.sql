@@ -1,112 +1,126 @@
--- ==============================================
--- CRIAÇÃO DO BANCO DE DADOS
--- ==============================================
+-- AS DUAS LINHAS MÁGICAS PARA SELECIONAR O BANCO
 CREATE DATABASE IF NOT EXISTS appbit_hackathon;
 USE appbit_hackathon;
 
--- ==============================================
--- TABELA 1: ANTENAS
--- Dados de localização das antenas da rede
--- Origem: tensor_antenas.csv
--- ==============================================
-CREATE TABLE IF NOT EXISTS antenas (
-    ecgi VARCHAR(50) PRIMARY KEY,
-    setor VARCHAR(100),
-    cluster VARCHAR(100),
-    municipio VARCHAR(100),
-    uf VARCHAR(2),
-    lat FLOAT,
-    lon FLOAT,
-    tecnologia VARCHAR(10)
-);
-
--- ==============================================
--- TABELA 2: ASSINANTES
--- Base de 200k usuários - Dados para Matching
--- ✅ ALINHADO COM models_db.py e base Vísent
--- ==============================================
-CREATE TABLE IF NOT EXISTS assinantes (
-    assinante_hash INT PRIMARY KEY,       -- ID anonimizado
-    home_cluster VARCHAR(100),            -- Região / Bairro
-    home_municipio VARCHAR(100),          -- Município
-    uf VARCHAR(2),                        -- Estado
-    income_cluster VARCHAR(1),            -- Renda: A, B, C
-    age_group VARCHAR(20),                -- Faixa etária: 18-24, 25-34, 55+
-    mobility_pattern VARCHAR(50),        -- Mobilidade: INTENSA, MODERADA
-    flag_flagship INT                     -- Critério ESG: 1 = grupo sub-representado
-);
-
--- ==============================================
--- TABELA 3: CONCENTRAÇÃO DE MOVIMENTO
--- Dados de fluxo de pessoas por região e horário
--- Usado na rota de Insights / Mapa de Talentos
--- ==============================================
-CREATE TABLE IF NOT EXISTS concentracao (
+-- 1. MÓDULO BASE (EMPREGABILIDADE E EMPRESAS)
+CREATE TABLE Empresa (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    ecgi VARCHAR(50),
-    cluster VARCHAR(100),
-    municipio VARCHAR(100),
-    day_date DATE,
-    periodo VARCHAR(20),          -- MADRUGADA / MANHA / TARDE / NOITE
-    n_usuarios INT,               -- ✅ Métrica principal: quantidade de pessoas
-    n_sessoes INT,
-    download_bytes BIGINT,
-    upload_bytes BIGINT,
-    dur_media_s FLOAT,
-    drop_pct_medio FLOAT,
-    congestionamento_medio FLOAT,
-    chamadas_total INT,
-    mensagens_total INT,
-    lat FLOAT,
-    lon FLOAT
+    nome_empresa VARCHAR(255) NOT NULL,
+    cnpj VARCHAR(18) UNIQUE NOT NULL,
+    metas_esg TEXT
 );
 
--- ==============================================
--- TABELA 4: VAGAS
--- Cadastro de oportunidades de emprego
--- Usado nas rotas de Vagas
--- ==============================================
-CREATE TABLE IF NOT EXISTS vagas (
+CREATE TABLE Vaga (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    cargo VARCHAR(100) NOT NULL,
-    descricao VARCHAR(500) NOT NULL,
-    escolaridade_requerida VARCHAR(100),
-    faixa_salarial VARCHAR(50) NOT NULL,
-    localizacao VARCHAR(100) NOT NULL,
-    criterios_esg VARCHAR(200),   -- Ex: "PCD, 50+, Mulheres"
-    status VARCHAR(20) DEFAULT 'Publicada'
+    empresa_id INT NOT NULL,
+    titulo_vaga VARCHAR(255) NOT NULL,
+    skills_exigidas VARCHAR(255) NOT NULL,
+    regiao VARCHAR(100) NOT NULL,
+    FOREIGN KEY (empresa_id) REFERENCES Empresa(id) ON DELETE CASCADE
 );
 
--- ==============================================
--- TABELA 5: EMPRESAS
--- Dados das empresas parceiras
--- ==============================================
-CREATE TABLE IF NOT EXISTS empresas (
+CREATE TABLE Candidato (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(100),
-    segmento VARCHAR(100),
-    cnpj VARCHAR(20),
-    cidade VARCHAR(100)
+    nome_completo VARCHAR(255) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    skills_candidato VARCHAR(255) NOT NULL,
+    genero VARCHAR(50),
+    raca VARCHAR(50),
+    latitude FLOAT,
+    longitude FLOAT
 );
 
--- ==============================================
--- ÍNDICES PARA OTIMIZAÇÃO DE CONSULTAS
--- ==============================================
-CREATE INDEX idx_concentracao_municipio ON concentracao(municipio);
-CREATE INDEX idx_concentracao_periodo ON concentracao(periodo);
-CREATE INDEX idx_concentracao_ecgi ON concentracao(ecgi);
+CREATE TABLE Match_Score (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    vaga_id INT NOT NULL,
+    candidato_id INT NOT NULL,
+    porcentagem_compatibilidade FLOAT NOT NULL,
+    badge_diversidade BOOLEAN DEFAULT FALSE,
+    justificativa_analise TEXT,
+    FOREIGN KEY (vaga_id) REFERENCES Vaga(id) ON DELETE CASCADE,
+    FOREIGN KEY (candidato_id) REFERENCES Candidato(id) ON DELETE CASCADE
+);
 
-CREATE INDEX idx_assinante_municipio ON assinantes(home_municipio);
-CREATE INDEX idx_assinante_renda ON assinantes(income_cluster);
-CREATE INDEX idx_assinante_idade ON assinantes(age_group);
-CREATE INDEX idx_assinante_esg ON assinantes(flag_flagship);
+-- 2. MÓDULO DE FORMAÇÕES
+CREATE TABLE Curso_Trilha (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    titulo VARCHAR(255) NOT NULL,
+    descricao TEXT,
+    carga_horaria INT
+);
 
-CREATE INDEX idx_vagas_localizacao ON vagas(localizacao);
+CREATE TABLE Progresso_Treinamento (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    empresa_id INT NOT NULL,
+    curso_id INT NOT NULL,
+    status_conclusao VARCHAR(50) DEFAULT 'Em Andamento',
+    data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (empresa_id) REFERENCES Empresa(id) ON DELETE CASCADE,
+    FOREIGN KEY (curso_id) REFERENCES Curso_Trilha(id) ON DELETE CASCADE
+);
 
--- ==============================================
--- CHAVES ESTRANGEIRAS
--- ==============================================
-ALTER TABLE concentracao
-    ADD CONSTRAINT fk_concentracao_antena
-    FOREIGN KEY (ecgi) REFERENCES antenas(ecgi)
-    ON DELETE SET NULL ON UPDATE CASCADE;
+-- 3. MÓDULO DE EXPERIÊNCIAS ESTRUTURANTES
+CREATE TABLE Evento_Corporativo (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    titulo_evento VARCHAR(255) NOT NULL,
+    palestrante VARCHAR(255),
+    data_evento TIMESTAMP,
+    tipo_evento VARCHAR(100) DEFAULT 'Painel/Palestra'
+);
+
+-- 4. MÓDULO DE MENTORIAS
+CREATE TABLE Mentoria_Networking (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    empresa_origem_id INT NOT NULL,
+    empresa_destino_id INT NOT NULL,
+    pauta_discussao TEXT,
+    data_agendamento TIMESTAMP,
+    FOREIGN KEY (empresa_origem_id) REFERENCES Empresa(id) ON DELETE CASCADE,
+    FOREIGN KEY (empresa_destino_id) REFERENCES Empresa(id) ON DELETE CASCADE
+);
+
+-- 5. MÓDULO DE SAÚDE DO TIME (DADOS ANONIMIZADOS)
+CREATE TABLE Saude_Time_Dashboard (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    regiao VARCHAR(100) NOT NULL,
+    perfil_demografico VARCHAR(100),
+    indice_burnout_medio FLOAT,
+    indice_exclusao_medio FLOAT,
+    data_coleta TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 6. DATASET INTEGRADO VÍSENT CDRVIEW (ANATEL COBERTURA)
+CREATE TABLE Visent_CDRView_Dados (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    zona_coordenadas VARCHAR(255) NOT NULL,
+    concentracao_talentos VARCHAR(50),
+    cobertura_rede VARCHAR(50), 
+    latitude_antena FLOAT,
+    longitude_antena FLOAT
+);
+
+CREATE TABLE Mensagem_Recrutamento (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    empresa_id INT NOT NULL,
+    candidato_id INT NOT NULL,
+    vaga_id INT NOT NULL,
+    conteudo TEXT NOT NULL,
+    data_envio TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    status_leitura VARCHAR(20) DEFAULT 'Não lida',
+    FOREIGN KEY (empresa_id) REFERENCES Empresa(id) ON DELETE CASCADE,
+    FOREIGN KEY (candidato_id) REFERENCES Candidato(id) ON DELETE CASCADE,
+    FOREIGN KEY (vaga_id) REFERENCES Vaga(id) ON DELETE CASCADE
+);
+
+CREATE TABLE Contratacao_Comissao (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    empresa_id INT NOT NULL,
+    candidato_id INT NOT NULL,
+    vaga_id INT NOT NULL,
+    status_contratacao VARCHAR(50) DEFAULT 'Em negociação',
+    valor_comissao DECIMAL(10, 2),
+    data_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (empresa_id) REFERENCES Empresa(id) ON DELETE CASCADE,
+    FOREIGN KEY (candidato_id) REFERENCES Candidato(id) ON DELETE CASCADE,
+    FOREIGN KEY (vaga_id) REFERENCES Vaga(id) ON DELETE CASCADE
+);
