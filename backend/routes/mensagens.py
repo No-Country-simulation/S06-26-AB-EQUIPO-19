@@ -60,3 +60,17 @@ def enviar_mensagem_candidato(payload: MensagemInput, db: Session = Depends(get_
         db.rollback()
         print(f"Erro ao processar mensagem e comissão: {erro}")
         raise HTTPException(status_code=500, detail="Falha ao registrar dados de contratação no banco de dados.")
+
+@router.get("/{id}/candidatos")
+def listar_candidatos_vaga(id: int, db: Session = Depends(get_db)):
+    try:
+        query = text("""
+            SELECT c.* FROM Candidatos c
+            JOIN Candidaturas cand ON c.id = cand.candidato_id
+            WHERE cand.vaga_id = :vaga_id
+        """)
+        resultado = db.execute(query, {"vaga_id": id}).fetchall()
+        candidatos = [dict(row._mapping) for row in resultado]
+        return {"vaga_id": id, "candidatos": candidatos}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
