@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { ScoreRing } from "@/components/score-ring"
 import { LiveBadge } from "@/components/live-badge"
 import { useMatch, enviarMensagem } from "@/lib/api/hooks"
-import { stateData } from "@/lib/data"
+// import { stateData } from "@/lib/data"
 
 type Props = {
   selectedState: string | null
@@ -24,8 +24,8 @@ export function TalentList({ selectedState }: Props) {
   const [enviando, setEnviando] = useState(false)
 
   const selectedUf = selectedState
-    ? stateData.find((s) => s.name === selectedState)?.uf
-    : undefined
+    // ? stateData.find((s) => s.name === selectedState)?.uf
+    // : undefined
 
   const ranked = [...candidates]
     .filter((c) => {

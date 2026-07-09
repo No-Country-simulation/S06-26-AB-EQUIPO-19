@@ -16,7 +16,7 @@ import { companies } from "@/lib/data"
 
 export function TalentView() {
   const { jobs, isLive, isLoading } = useVagas()
-  const [selectedJob, setSelectedJob] = useState<JobItem | null>(null)
+  const [selectedJob, setSelectedJob] = useState<null>(null)
   const [detailOpen, setDetailOpen] = useState(false)
 
   function openJob(job: JobItem) {
