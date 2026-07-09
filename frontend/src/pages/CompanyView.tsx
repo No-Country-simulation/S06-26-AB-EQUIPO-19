@@ -6,6 +6,7 @@ import { StatCard } from "@/components/stat-card"
 import { TalentMapPanel } from "@/components/talent-map-panel"
 import { TalentList } from "@/components/talent-list"
 import { BiasEnginePanel } from "@/components/bias-engine-panel"
+import { VagaList } from "@/components/vaga-list"
 import { useDashboard, useMatch, useInsights } from "@/lib/api/hooks"
 
 export function CompanyView() {
@@ -54,6 +55,8 @@ export function CompanyView() {
       <BiasEnginePanel />
 
       <TalentList selectedState={selectedState} />
+
+      <VagaList />
     </div>
   )
 }
